@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шатёр — Платформа обучения</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+window.onerror = function(msg, src, line, col, err) {
+  document.body.innerHTML = '<div style="background:#0E0D0B;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif"><div style="background:#1E1B16;border:1px solid #322D25;border-radius:16px;padding:40px;max-width:480px;text-align:center"><div style="font-size:32px;margin-bottom:16px">⚠️</div><div style="color:#E8E0D0;font-size:18px;margin-bottom:12px">Ошибка загрузки</div><div style="color:#A09070;font-size:13px;line-height:1.7;margin-bottom:20px">Приложение требует веб-сервера.<br>Нельзя открывать через file://</div><div style="background:#252118;border-radius:8px;padding:16px;font-size:12px;color:#5A5040;text-align:left"><div style="margin-bottom:8px;color:#C9A84C">Как запустить:</div><div>1. Загрузи файл на любой хостинг</div><div>2. Или открой через Live Server в VS Code</div><div>3. Или запусти: python -m http.server 8080</div><div style="margin-top:8px;color:#A09070">Затем открой: http://localhost:8080</div></div><div style="margin-top:16px;font-size:11px;color:#5A5040">Ошибка: ' + msg + '</div></div></div>';
+  return true;
+};
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9A84C;--gold-light:#E8C97A;--gold-dim:rgba(201,168,76,0.12);--dark:#0E0D0B;--dark2:#161410;--dark3:#1E1B16;--dark4:#252118;--surface:#2A2620;--surface2:#322D25;--text:#E8E0D0;--text-dim:#A09070;--text-faint:#5A5040;--red:#C84A3A;--green:#5A9A6A;--blue:#4A7AB5;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* LANDING */
+#screenLanding{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.08) 0%,transparent 70%);}
+.landing-logo{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:700;color:var(--gold);letter-spacing:6px;margin-bottom:8px;text-align:center;}
+.landing-sub{font-size:13px;color:var(--text-faint);text-transform:uppercase;letter-spacing:3px;margin-bottom:48px;text-align:center;}
+.landing-desc{max-width:480px;text-align:center;color:var(--text-dim);font-size:15px;line-height:1.8;margin-bottom:56px;}
+.landing-desc strong{color:var(--gold);font-weight:500;}
+.role-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:40px;}
+.role-card{background:var(--dark3);border:1px solid var(--surface2);border-radius:16px;padding:28px 32px;cursor:pointer;transition:all 0.2s;text-align:center;min-width:160px;position:relative;overflow:hidden;}
+.role-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--surface2);transition:background 0.2s;}
+.role-card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
+.role-card:hover::before{background:var(--gold);}
+.role-icon{font-size:36px;margin-bottom:12px;}
+.role-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.role-hint{font-size:12px;color:var(--text-faint);}
+.landing-admin-btn{font-size:12px;color:var(--text-faint);cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+.landing-admin-btn:hover{color:var(--text-dim);}
+
+/* AUTH */
+#screenAuth{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;}
+.auth-box{background:var(--dark3);border:1px solid var(--surface2);border-radius:20px;padding:40px;width:100%;max-width:420px;}
+.auth-back{display:flex;align-items:center;gap:8px;color:var(--text-faint);font-size:13px;cursor:pointer;margin-bottom:28px;transition:color 0.15s;}
+.auth-back:hover{color:var(--text);}
+.auth-role-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold);margin-bottom:20px;}
+.auth-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.auth-sub{font-size:13px;color:var(--text-faint);margin-bottom:32px;}
+.form-group{margin-bottom:18px;}
+.form-label{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:block;}
+.form-input{width:100%;padding:12px 16px;background:var(--dark2);border:1px solid var(--surface2);border-radius:10px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;transition:border-color 0.15s;outline:none;}
+.form-input:focus{border-color:var(--gold);}
+.form-input::placeholder{color:var(--text-faint);}
+.form-select{width:100%;padding:12px 16px;background:var(--dark2);border:1px solid var(--surface2);border-radius:10px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;cursor:pointer;}
+.btn-primary{width:100%;padding:14px;background:var(--gold);color:var(--dark);border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.15s;margin-top:8px;}
+.btn-primary:hover{background:var(--gold-light);}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
+.auth-toggle{text-align:center;margin-top:20px;font-size:13px;color:var(--text-faint);}
+.auth-toggle span{color:var(--gold);cursor:pointer;}
+.auth-error{background:rgba(200,74,58,0.1);border:1px solid rgba(200,74,58,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none;}
+.auth-error.show{display:block;}
+.auth-info{background:var(--gold-dim);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-dim);margin-bottom:16px;}
+
+/* APP */
+#screenApp{flex-direction:row;}
+.sidebar{width:260px;flex-shrink:0;background:var(--dark2);border-right:1px solid var(--surface);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform 0.3s;}
+.sidebar-top{padding:24px 20px 16px;border-bottom:1px solid var(--surface);}
+.sb-restaurant{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:2px;}
+.sb-user{margin-top:12px;display:flex;align-items:center;gap:10px;}
+.sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--gold);flex-shrink:0;}
+.sb-name{font-size:13px;font-weight:500;color:var(--text);}
+.sb-role-badge{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;}
+.nav-item:hover{background:var(--gold-dim);}
+.nav-item.active{background:var(--gold-dim);border-left-color:var(--gold);}
+.nav-icon{font-size:16px;width:20px;text-align:center;}
+.nav-text{font-size:13px;font-weight:500;color:var(--text-dim);}
+.nav-item.active .nav-text,.nav-item:hover .nav-text{color:var(--text);}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--surface);}
+.logout-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;background:none;border:1px solid var(--surface2);border-radius:8px;cursor:pointer;color:var(--text-faint);font-size:13px;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+.main-area{margin-left:260px;flex:1;min-height:100vh;overflow-y:auto;}
+.page{display:none;padding:40px 48px;}
+.page.active{display:block;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.page-sub{font-size:14px;color:var(--text-dim);margin-bottom:32px;}
+
+/* CARDS */
+.card{background:var(--dark3);border:1px solid var(--surface2);border-radius:16px;padding:24px;margin-bottom:20px;}
+.card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px;}
+.card-section{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.stats-row{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.stat-card{background:var(--dark3);border:1px solid var(--surface2);border-radius:12px;padding:20px 24px;flex:1;min-width:140px;}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;color:var(--gold);line-height:1;}
+.stat-label{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.prog-wrap{margin-bottom:12px;}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:6px;}
+.prog-bg{background:var(--surface);border-radius:999px;height:6px;}
+.prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width 0.6s;}
+
+/* BLOCKS */
+.blocks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.block-card{background:var(--dark3);border:1px solid var(--surface2);border-radius:14px;padding:20px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.block-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--surface2);}
+.block-card.unlocked::before{background:var(--gold);}
+.block-card.done::before{background:var(--green);}
+.block-card.locked{opacity:0.45;cursor:not-allowed;}
+.block-card:not(.locked):hover{border-color:var(--gold);transform:translateY(-2px);}
+.bc-num{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:700;color:var(--surface);position:absolute;top:12px;right:16px;line-height:1;}
+.bc-icon{font-size:26px;margin-bottom:10px;}
+.bc-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.bc-desc{font-size:12px;color:var(--text-dim);margin-bottom:14px;line-height:1.5;}
+.bc-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;}
+.bc-status.done{background:rgba(90,154,106,0.15);color:var(--green);}
+.bc-status.open{background:var(--gold-dim);color:var(--gold);}
+.bc-status.locked{background:var(--surface);color:var(--text-faint);}
+.bc-status.pending{background:rgba(74,122,181,0.15);color:var(--blue);}
+
+/* BLOCK DETAIL */
+.block-header-bar{background:var(--dark2);border-bottom:1px solid var(--surface);padding:24px 48px 0;position:sticky;top:0;z-index:50;}
+.bh-back{font-size:12px;color:var(--text-faint);cursor:pointer;margin-bottom:8px;display:inline-flex;align-items:center;gap:6px;}
+.bh-back:hover{color:var(--text);}
+.bh-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--text);}
+.bh-tabs{display:flex;gap:0;margin-top:16px;}
+.tab-btn{padding:8px 20px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-dim);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.block-body{padding:32px 48px;}
+
+/* CONTENT */
+.section-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--surface);}
+.section-subtitle{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text-dim);margin:20px 0 12px;}
+.callout{background:var(--dark3);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13px;color:var(--text-dim);font-style:italic;}
+.callout-warn{border-left-color:var(--red);background:rgba(200,74,58,0.06);}
+.callout-green{border-left-color:var(--green);background:rgba(90,154,106,0.06);}
+.content-ul{list-style:none;margin:10px 0;padding:0;}
+.content-ul li{padding:5px 0 5px 18px;position:relative;font-size:13px;color:var(--text-dim);}
+.content-ul li::before{content:'—';position:absolute;left:0;color:var(--gold);}
+.content-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;background:var(--dark3);border-radius:10px;overflow:hidden;border:1px solid var(--surface);}
+.content-table th{background:var(--surface);padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);font-weight:600;}
+.content-table td{padding:10px 14px;border-top:1px solid var(--surface);color:var(--text-dim);vertical-align:top;}
+.content-table tr:hover td{background:var(--gold-dim);color:var(--text);}
+
+/* QUIZ */
+.quiz-wrap{max-width:680px;}
+.q-prog{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+.q-prog-bar{flex:1;height:4px;background:var(--surface);border-radius:2px;}
+.q-prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.4s;}
+.q-prog-txt{font-size:12px;color:var(--text-faint);white-space:nowrap;}
+.quiz-q{background:var(--dark3);border:1px solid var(--surface2);border-radius:14px;padding:28px;margin-bottom:16px;}
+.q-label{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.q-text{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);line-height:1.4;margin-bottom:20px;}
+.q-opts{display:flex;flex-direction:column;gap:8px;}
+.q-opt{padding:12px 16px;border-radius:8px;border:1px solid var(--surface2);background:var(--dark2);cursor:pointer;font-size:13px;color:var(--text-dim);transition:all 0.15s;display:flex;align-items:center;gap:10px;}
+.q-opt:hover{border-color:var(--gold);color:var(--text);background:var(--gold-dim);}
+.q-opt.selected{border-color:var(--gold);background:var(--gold-dim);color:var(--text);}
+.q-opt.correct{border-color:var(--green);background:rgba(90,154,106,0.15);color:var(--text);}
+.q-opt.wrong{border-color:var(--red);background:rgba(200,74,58,0.1);color:var(--text);}
+.q-opt-l{width:22px;height:22px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
+.q-exp{margin-top:12px;padding:12px 16px;border-radius:8px;font-size:12px;display:none;}
+.q-exp.show{display:block;}
+.q-exp.good{background:rgba(90,154,106,0.1);border:1px solid rgba(90,154,106,0.3);color:rgba(90,154,106,0.9);}
+.q-exp.bad{background:rgba(200,74,58,0.08);border:1px solid rgba(200,74,58,0.3);color:rgba(200,74,58,0.8);}
+.quiz-actions{display:flex;gap:10px;align-items:center;}
+.btn-quiz{padding:11px 24px;border-radius:8px;background:var(--gold);color:var(--dark);border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.btn-quiz:hover{background:var(--gold-light);}
+.btn-quiz:disabled{opacity:0.3;cursor:not-allowed;}
+.btn-ghost{padding:11px 20px;border-radius:8px;background:none;color:var(--text-dim);border:1px solid var(--surface2);cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.btn-ghost:hover{border-color:var(--text-dim);color:var(--text);}
+.quiz-result{text-align:center;padding:40px 24px;background:var(--dark3);border:1px solid var(--surface2);border-radius:14px;}
+.res-score{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:700;color:var(--gold);line-height:1;}
+.res-label{font-size:14px;color:var(--text-dim);margin:6px 0 20px;}
+.res-verdict{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-bottom:6px;}
+.res-verdict.pass{color:var(--green);}
+.res-verdict.fail{color:var(--red);}
+.res-hint{font-size:13px;color:var(--text-faint);margin-bottom:24px;}
+.res-note{font-size:12px;color:var(--blue);margin-bottom:20px;}
+
+/* CHECKLIST */
+.cl-item{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border-radius:8px;background:var(--dark3);border:1px solid var(--surface);margin-bottom:8px;cursor:pointer;transition:all 0.15s;}
+.cl-item:hover{border-color:var(--gold);}
+.cl-item.done{opacity:0.55;}
+.cl-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--surface2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;}
+.cl-item.done .cl-box{background:var(--green);border-color:var(--green);}
+.cl-item.done .cl-text{text-decoration:line-through;color:var(--text-faint);}
+.cl-text{font-size:13px;color:var(--text-dim);flex:1;line-height:1.5;}
+
+/* MENTOR/ADMIN */
+.trainee-card{background:var(--dark3);border:1px solid var(--surface2);border-radius:14px;padding:20px 24px;margin-bottom:14px;}
+.tc-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.tc-avatar{width:44px;height:44px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.tc-name{font-size:16px;font-weight:600;color:var(--text);}
+.tc-meta{font-size:12px;color:var(--text-faint);margin-top:2px;}
+.blocks-mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.bm{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.bm-done{background:rgba(90,154,106,0.15);color:var(--green);}
+.bm-pending{background:rgba(74,122,181,0.15);color:var(--blue);}
+.bm-locked{background:var(--surface);color:var(--text-faint);}
+.bm-needs-confirm{background:rgba(201,168,76,0.15);color:var(--gold);}
+.form-textarea{width:100%;padding:12px 16px;background:var(--dark2);border:1px solid var(--surface2);border-radius:10px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;resize:vertical;min-height:80px;outline:none;transition:border-color 0.15s;}
+.form-textarea:focus{border-color:var(--gold);}
+.btn-small{padding:8px 16px;border-radius:8px;background:var(--gold);color:var(--dark);border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.btn-small:hover{background:var(--gold-light);}
+.btn-small-ghost{padding:8px 16px;border-radius:8px;background:none;color:var(--text-dim);border:1px solid var(--surface2);cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.btn-danger{padding:8px 16px;border-radius:8px;background:rgba(200,74,58,0.15);color:var(--red);border:1px solid rgba(200,74,58,0.3);cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.trainee-row{display:flex;align-items:center;gap:16px;padding:14px 18px;background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;margin-bottom:8px;flex-wrap:wrap;}
+.tr-avatar{width:36px;height:36px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.tr-name{font-size:14px;font-weight:500;color:var(--text);}
+.tr-meta{font-size:11px;color:var(--text-faint);}
+.tr-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-gold{background:var(--gold-dim);color:var(--gold);}
+.badge-green{background:rgba(90,154,106,0.15);color:var(--green);}
+.badge-blue{background:rgba(74,122,181,0.15);color:var(--blue);}
+.badge-gray{background:var(--surface);color:var(--text-faint);}
+
+/* WELCOME */
+.welcome-banner{background:linear-gradient(135deg,var(--dark3) 0%,var(--dark4) 100%);border:1px solid var(--surface2);border-radius:20px;padding:36px 40px;margin-bottom:28px;position:relative;overflow:hidden;}
+.wb-greeting{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.wb-greeting span{color:var(--gold);}
+.wb-sub{font-size:14px;color:var(--text-dim);margin-bottom:20px;}
+.wb-mentor{display:inline-flex;align-items:center;gap:10px;background:var(--gold-dim);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:10px 16px;}
+.wb-mentor-label{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;}
+.wb-mentor-name{font-size:14px;font-weight:600;color:var(--gold);}
+
+/* WAIT */
+.wait-screen{text-align:center;padding:60px 40px;}
+.wait-icon{font-size:48px;margin-bottom:20px;}
+.wait-title{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--text);margin-bottom:8px;}
+.wait-sub{font-size:14px;color:var(--text-dim);max-width:380px;margin:0 auto 28px;line-height:1.7;}
+.wait-info{background:var(--dark3);border:1px solid var(--surface2);border-radius:12px;padding:20px 24px;max-width:380px;margin:0 auto;}
+.wi-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--surface);font-size:13px;}
+.wi-row:last-child{border-bottom:none;}
+.wi-label{color:var(--text-faint);}
+.wi-val{color:var(--text);font-weight:500;}
+
+.loading{text-align:center;padding:40px;color:var(--text-faint);font-size:14px;}
+.spinner{width:32px;height:32px;border-radius:50%;border:2px solid var(--surface2);border-top-color:var(--gold);animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.mobile-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;width:42px;height:42px;border-radius:10px;background:var(--dark2);border:1px solid var(--surface2);cursor:pointer;align-items:center;justify-content:center;color:var(--text);}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0.6);}
+.divider{height:1px;background:var(--surface);margin:20px 0;}
+.hidden{display:none!important;}
+.fade-in{animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.mt8{margin-top:8px;}.mt16{margin-top:16px;}.mt24{margin-top:24px;}
+.flex-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.flex-between{display:flex;align-items:center;justify-content:space-between;}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay.open{display:block;}
+  .mobile-toggle{display:flex;}
+  .main-area{margin-left:0;}
+  .page{padding:72px 20px 32px;}
+  .block-header-bar{padding:16px 20px 0;}
+  .block-body{padding:24px 20px;}
+  .blocks-grid{grid-template-columns:1fr;}
+  .tr-actions{margin-left:0;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div id="screenLanding" class="screen active">
+  <div class="landing-logo">ШАТЁР</div>
+  <div class="landing-sub">Платформа обучения персонала</div>
+  <div class="landing-desc">Полный путь от <strong>стажёра</strong> до <strong>наставника</strong>.<br>Блоки, тесты, прогресс, передача — всё в одном месте.</div>
+  <div class="role-cards">
+    <div class="role-card" onclick="goToAuth('trainee')"><div class="role-icon">🔰</div><div class="role-name">Стажёр</div><div class="role-hint">Начало обучения</div></div>
+    <div class="role-card" onclick="goToAuth('mentor')"><div class="role-icon">👨‍🏫</div><div class="role-name">Наставник</div><div class="role-hint">Веду стажёра</div></div>
+  </div>
+  <div class="landing-admin-btn" onclick="goToAuth('admin')">Войти как администратор</div>
+</div>
+
+<div id="screenAuth" class="screen">
+  <div class="auth-box">
+    <div class="auth-back" onclick="goToLanding()">← Назад</div>
+    <div class="auth-role-badge" id="authRoleBadge">🔰 Стажёр</div>
+    <div class="auth-title" id="authTitle">Регистрация</div>
+    <div class="auth-sub" id="authSub">Создай аккаунт</div>
+    <div class="auth-error" id="authError"></div>
+    <div id="authFormRegister">
+      <div class="auth-info" id="authInfoBox" style="display:none"></div>
+      <div class="form-group"><label class="form-label">Имя и фамилия</label><input class="form-input" id="regName" placeholder="Иван Петров"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="regEmail" type="email" placeholder="your@email.com"></div>
+      <div class="form-group"><label class="form-label">Пароль</label><input class="form-input" id="regPassword" type="password" placeholder="Минимум 6 символов"></div>
+      <button class="btn-primary" onclick="doRegister()" id="btnRegister">Создать аккаунт</button>
+      <div class="auth-toggle">Уже есть аккаунт? <span onclick="toggleAuthMode()">Войти</span></div>
+    </div>
+    <div id="authFormLogin" class="hidden">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="loginEmail" type="email" placeholder="your@email.com"></div>
+      <div class="form-group"><label class="form-label">Пароль</label><input class="form-input" id="loginPassword" type="password" placeholder="Пароль"></div>
+      <button class="btn-primary" onclick="doLogin()" id="btnLogin">Войти</button>
+      <div class="auth-toggle" id="loginToggle">Нет аккаунта? <span onclick="toggleAuthMode()">Регистрация</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="screenApp" class="screen">
+  <button class="mobile-toggle" id="mobileToggle">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="sb-restaurant">ШАТЁР</div>
+      <div class="sb-user">
+        <div class="sb-avatar" id="sbAvatar">И</div>
+        <div><div class="sb-name" id="sbName">...</div><div class="sb-role-badge" id="sbRoleBadge">—</div></div>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Выйти
+      </button>
+    </div>
+  </aside>
+  <div class="main-area" id="mainArea"></div>
+</div>
+<script>
+const SUPA_URL='https://blidutosqvztbcaflqkd.supabase.co';
+const SUPA_KEY='sb_publishable_aKfv1DnvSEHkRGEc82nUXA_jXmi-OUy';
+const {createClient}=supabase;
+const db=createClient(SUPA_URL,SUPA_KEY);
+
+let currentRole='trainee',currentUser=null,currentProfile=null,authMode='register';
+const ADMIN_EMAIL='admin@shater.ru',ADMIN_PASS='Shater2026!';
+
+const BLOCKS=[
+  {id:1,title:'Стандарты и поведение',icon:'👔',desc:'Внешний вид, дисциплина, этический кодекс.',mentor:1},
+  {id:2,title:'Рабочий день официанта',icon:'🕐',desc:'Чек-листы открытия и закрытия, ритм дня.',mentor:1},
+  {id:3,title:'Искусство сервиса',icon:'🎯',desc:'7 шагов гостеприимства, подача, поднос.',mentor:2},
+  {id:4,title:'Продажи',icon:'💡',desc:'ВУЗУ, техники продаж, типы гостей.',mentor:2},
+  {id:5,title:'Конфликты и ЧП',icon:'🛡️',desc:'ВПИО, конфликтные ситуации, ЧП.',mentor:2},
+  {id:6,title:'Аттестация',icon:'🏆',desc:'Уровни, формат сдачи, путь к Легенде.',mentor:0}
+];
+
+const QUIZZES={
+  1:[
+    {q:'Официант вышел в зал без зажигалки. Категория нарушения?',opts:['Категория А','Категория Б','Категория В','Не нарушение'],c:0,e:'Выход без инвентаря — нарушение категории А (300 ₽).'},
+    {q:'Незнакомый гость обратился к тебе, ты не его официант. Что делаешь?',opts:['Объяснить что не твой стол','«Одну минуту, позову вашего официанта»','Проигнорировать','Попросить подождать и уйти'],c:1,e:'Минимальная реакция — «Одну минуту, позову вашего официанта».'},
+    {q:'Правило 5/3 метров. Что делаешь на 3 метрах?',opts:['Зрительный контакт','Улыбаемся','Приветствуем словом','Предлагаем меню'],c:2,e:'На 5 м — зрительный контакт и улыбка. На 3 м — приветствие словом.'},
+    {q:'Гость разлил напиток и порезался. Первый шаг?',opts:['Принести счёт','Огородить, вызвать клининг, не уходить','Убрать осколки самому','Позвать другого официанта'],c:1,e:'Огородить → клининг → не уходить до уборки.'},
+    {q:'Штраф за разговор по телефону в зале?',opts:['300 ₽','500 ₽','1000 ₽','Увольнение'],c:2,e:'Разговор по телефону в зале — 1000 ₽ (категория Б).'},
+    {q:'Официант недоволен решением администратора. Правильное действие?',opts:['Обсудить с коллегами','Написать объяснительную','Письменное обращение управляющему','Соцсети'],c:2,e:'По субординации — письменное обращение лично управляющему.'}
+  ],
+  2:[
+    {q:'Утренняя смена. Когда быть переодетым и на зоне?',opts:['09:00','08:45','08:30','09:15'],c:1,e:'Начало смены 09:00, но на зоне — в 08:45.'},
+    {q:'Гость заказывает с мангала в 10:15. Мангал с 11:00. Что говоришь?',opts:['Принять заказ','«Нет, мангал не работает»','«Мангал с 11:00, пока могу предложить...»','Позвать администратора'],c:2,e:'Никогда просто «нет». Называй время и предлагай альтернативу.'},
+    {q:'Блюдо попало в стоп-лист, гость сидит. Что делаешь?',opts:['Ждёшь','Сообщаешь немедленно и предлагаешь замену','Говоришь если спросит','Игнорируешь'],c:1,e:'Сообщай немедленно и предлагай замену.'},
+    {q:'Пятиминутка 10:45, пришёл в 10:47. Нарушение?',opts:['Нет, 2 минуты','Да — опоздание на пятиминутку = опоздание на смену','Нет','Если заметит администратор'],c:1,e:'Опоздание на пятиминутку = опоздание на смену.'},
+    {q:'Официант идёт на обед, зона не прикрыта. Правильно?',opts:['Да','Нет — уходить только когда зона под присмотром','Да, сам отвечает','Если предупредил'],c:1,e:'Уходить — только когда зона под присмотром коллеги.'},
+    {q:'Уход без сдачи зоны. Штраф?',opts:['300 ₽','500 ₽','1000 ₽','Без штрафа'],c:2,e:'Уход без сдачи зоны — 1000 ₽.'}
+  ],
+  3:[
+    {q:'Когда подаётся хлебная корзина?',opts:['Сразу как сел','После напитков до заказа','Только после основного заказа','По просьбе гостя'],c:2,e:'Хлеб — только после основного заказа.'},
+    {q:'Через сколько минут делается чек-бэк?',opts:['Сразу','2–3 минуты','5–7 минут','В конце'],c:1,e:'Чек-бэк через 2–3 минуты после подачи.'},
+    {q:'Очерёдность подачи блюд?',opts:['Кто первый заказал','Мужчины→женщины→дети','Дети→женщины→мужчины→хозяин','Все одновременно'],c:2,e:'Дети → женщины → мужчины → хозяин стола.'},
+    {q:'Что нельзя при уборке посуды?',opts:['Говорить «Освобожу стол»','Убирать пока гость ещё ест','Убирать после складывания приборов','Сначала лишнее затем крупное'],c:1,e:'Никогда не убирай у гостя который ещё ест.'},
+    {q:'Как открывать бутылку воды?',opts:['На баре','В зале не за столом','За столом при госте','Неважно'],c:2,e:'Только за столом в присутствии гостя.'},
+    {q:'Как держать бокал при сервировке?',opts:['За край','За ножку','За основание','Не принципиально'],c:1,e:'Только за ножку — никогда за край.'}
+  ],
+  4:[
+    {q:'«З» в ВУЗУ — это?',opts:['Зарплата','Забота','Зрительный контакт','Знание меню'],c:1,e:'ВУЗУ: Внимание, Уважение, Забота, Улыбка.'},
+    {q:'Перечисляешь соки, хочешь продать гранатовый. Какой метод?',opts:['Штирлица','Кивок Салливана','Красочное описание','Апселл'],c:1,e:'Кивок Салливана — лёгкий кивок на нужную позицию при перечислении.'},
+    {q:'Гость заказал стейк. Как предложить гарнир?',opts:['Принести меню','«Не хотите гарнир?»','«К стейку — картофель. Из соусов — сырный или грибной»','Ничего'],c:2,e:'Техника цепочки — предлагай конкретно.'},
+    {q:'Гости с ребёнком 5 лет. Первый шаг?',opts:['Принести меню всем','Аперитив взрослым','Сначала ребёнок: меню стульчик','Спросить взрослых'],c:2,e:'С детьми — сначала занимайся детьми.'},
+    {q:'Как правильно предложить десерт?',opts:['«Не желаете десерт?»','«Хотите десерт?»','«Медовик и чизкейк. Что принести?»','«Всё?»'],c:2,e:'Никогда «хотите ли» — называй конкретные позиции.'},
+    {q:'Рибай в стоп-листе. Что говоришь?',opts:['«Рибая нет»','«Закончился»','«Рибай закончился, есть Нью-Йорк — похожий по вкусу»','«Уточню»'],c:2,e:'Техника альтернативного предложения — никогда просто «нет».'}
+  ],
+  5:[
+    {q:'Алгоритм ВПИО по порядку?',opts:['Внимание Поддержка Итог Общение','Выслушай Прими-извинения Исправь Отблагодари','Выслушай Пожалей Извинись Отпусти','Встреть Пойми Исправь Оцени'],c:1,e:'ВПИО: Выслушай → Прими извинения → Исправь → Отблагодари.'},
+    {q:'Гость агрессивен. Первое действие?',opts:['Объяснить что неправ','Охрана','Молчать кивать дать выговориться','Предложить скидку'],c:2,e:'Любое слово подливает масло. Молчание и кивок — твоё оружие.'},
+    {q:'Гость съел 10% блюда — невкусно. Что делаешь?',opts:['Объясняешь рецепт','Предлагаешь скидку','Извиняешься и зовёшь администратора','Удаляешь из счёта'],c:2,e:'Официант не принимает финансовых решений. Извинись → администратор.'},
+    {q:'Убрал блюдо с посторонним предметом. Что с ним делать?',opts:['Выбросить','Отдать повару','Сохранить для разбора','Принести новое и забыть'],c:2,e:'Сохрани для разбора — не выбрасывай.'},
+    {q:'Пожар. Первые действия?',opts:['Тушить самому','Нажать сигнализацию и спокойно попросить покинуть зал','Звонить 101 и ждать','Позвать администратора'],c:1,e:'Кнопка сигнализации → спокойно попросить выйти. МЧС: 101.'},
+    {q:'Официант может дать скидку при жалобе?',opts:['Да до 10%','Да если расстроен','Нет — только администратор','Да если его вина'],c:2,e:'Любая компенсация — только решение администратора.'}
+  ],
+  6:[
+    {q:'Новичок сдал блоки 1 и 2. Может перейти к блоку 4?',opts:['Да если знает материал','Нет — строго по порядку','Да с разрешения администратора','Да если прошёл 3 сам'],c:1,e:'Блоки — строго по порядку.'},
+    {q:'После каких блоков официант становится Профи?',opts:['После 1–3','После 1–5','После сдачи меню','После 3 месяцев'],c:1,e:'Профи — автоматически после всех 5 блоков.'},
+    {q:'Когда можно пересдать блок?',opts:['Сразу на следующий день','Через 3 рабочих дня','Через 7 дней','Через 2 недели'],c:1,e:'Пересдача — не раньше 3 рабочих дней.'},
+    {q:'88% по разделу Супы. Можно получить Легенду?',opts:['Да близко к 90%','Нет — минимум 90% по каждому','Да если остальные выше','Решает администратор'],c:1,e:'Минимум 90% по каждому разделу без исключений.'}
+  ]
+};
+
+// ── AUTH ──
+function goToLanding(){showScreen('screenLanding');}
+function goToAuth(role){
+  currentRole=role; authMode='register';
+  updateAuthUI(); showScreen('screenAuth');
+}
+function toggleAuthMode(){authMode=authMode==='register'?'login':'register';updateAuthUI();}
+function updateAuthUI(){
+  const badges={trainee:'🔰 Стажёр',mentor:'👨‍🏫 Наставник',admin:'👑 Администратор'};
+  document.getElementById('authRoleBadge').textContent=badges[currentRole];
+  document.getElementById('authTitle').textContent=authMode==='register'?'Регистрация':'Вход';
+  const info=document.getElementById('authInfoBox');
+  if(currentRole==='trainee'&&authMode==='register'){info.textContent='После регистрации тебе назначат наставника — обучение начнётся после этого.';info.style.display='block';}
+  else if(currentRole==='mentor'&&authMode==='register'){info.textContent='Наставник может вести до 2 стажёров одновременно.';info.style.display='block';}
+  else{info.style.display='none';}
+  const isAdmin=currentRole==='admin';
+  if(isAdmin||authMode==='login'){
+    document.getElementById('authFormRegister').classList.add('hidden');
+    document.getElementById('authFormLogin').classList.remove('hidden');
+    document.getElementById('authSub').textContent=isAdmin?'Вход для администратора':'Вход в аккаунт';
+    if(isAdmin)document.getElementById('loginToggle').style.display='none';
+    else document.getElementById('loginToggle').style.display='block';
+  }else{
+    document.getElementById('authFormRegister').classList.remove('hidden');
+    document.getElementById('authFormLogin').classList.add('hidden');
+    document.getElementById('authSub').textContent='Создай аккаунт';
+  }
+  document.getElementById('authError').classList.remove('show');
+}
+function showAuthError(msg){const el=document.getElementById('authError');el.textContent=msg;el.classList.add('show');}
+
+async function doRegister(){
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPassword').value;
+  if(!name||!email||!pass){showAuthError('Заполни все поля');return;}
+  if(pass.length<6){showAuthError('Пароль минимум 6 символов');return;}
+  const btn=document.getElementById('btnRegister');
+  btn.disabled=true;btn.textContent='Создаю...';
+  const{data,error}=await db.auth.signUp({email,password:pass});
+  if(error){showAuthError(error.message);btn.disabled=false;btn.textContent='Создать аккаунт';return;}
+  await db.from('users').insert({id:data.user.id,name,role:currentRole,block_current:1,block_passed:[],status:'active'});
+  await loadProfileAndEnter(data.user);
+}
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value;
+  if(!email||!pass){showAuthError('Введи email и пароль');return;}
+  const btn=document.getElementById('btnLogin');
+  btn.disabled=true;btn.textContent='Вхожу...';
+  if(currentRole==='admin'&&email===ADMIN_EMAIL&&pass===ADMIN_PASS){
+    currentProfile={id:'admin',name:'Администратор',role:'admin'};
+    enterApp();return;
+  }
+  const{data,error}=await db.auth.signInWithPassword({email,password:pass});
+  if(error){showAuthError('Неверный email или пароль');btn.disabled=false;btn.textContent='Войти';return;}
+  await loadProfileAndEnter(data.user);
+}
+
+async function loadProfileAndEnter(user){
+  currentUser=user;
+  const{data}=await db.from('users').select('*').eq('id',user.id).single();
+  if(!data){showAuthError('Профиль не найден');return;}
+  currentProfile=data;enterApp();
+}
+
+async function doLogout(){
+  await db.auth.signOut();
+  currentUser=null;currentProfile=null;goToLanding();
+}
+
+// ── APP ──
+function enterApp(){
+  showScreen('screenApp');renderSidebar();
+  const r=currentProfile.role;
+  if(r==='trainee')renderTraineeDashboard();
+  else if(r==='mentor')renderMentorDashboard();
+  else renderAdminDashboard();
+}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function setMainHTML(html){document.getElementById('mainArea').innerHTML=`<div class="page active fade-in">${html}</div>`;}
+
+function renderSidebar(){
+  const p=currentProfile;
+  document.getElementById('sbAvatar').textContent=(p.name||'?')[0].toUpperCase();
+  document.getElementById('sbName').textContent=p.name||'Пользователь';
+  document.getElementById('sbRoleBadge').textContent={trainee:'Стажёр',mentor:'Наставник',admin:'Администратор'}[p.role]||p.role;
+  const nav=document.getElementById('sidebarNav');
+  let items=[];
+  if(p.role==='trainee')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'blocks',icon:'📚',label:'Блоки обучения'},{id:'progress',icon:'📊',label:'Мой прогресс'}];
+  else if(p.role==='mentor')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'trainees',icon:'👥',label:'Мои стажёры'},{id:'blocks',icon:'📚',label:'Материалы'}];
+  else items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'all-trainees',icon:'👥',label:'Все стажёры'},{id:'all-mentors',icon:'👨‍🏫',label:'Наставники'},{id:'confirm',icon:'✅',label:'Подтверждения'}];
+  nav.innerHTML=items.map(i=>`<div class="nav-item" data-page="${i.id}" onclick="showPage('${i.id}')"><div class="nav-icon">${i.icon}</div><div class="nav-text">${i.label}</div></div>`).join('');
+}
+
+function showPage(id){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===id));
+  closeMobileSidebar();
+  const r=currentProfile.role;
+  if(id==='dashboard'){if(r==='trainee')renderTraineeDashboard();else if(r==='mentor')renderMentorDashboard();else renderAdminDashboard();}
+  else if(id==='blocks')renderBlocksList();
+  else if(id==='progress')renderTraineeProgress();
+  else if(id==='trainees')renderMentorTrainees();
+  else if(id==='all-trainees')renderAdminTrainees();
+  else if(id==='all-mentors')renderAdminMentors();
+  else if(id==='confirm')renderAdminConfirm();
+}
+
+// ── TRAINEE ──
+async function renderTraineeDashboard(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const p=currentProfile;
+  let mentorName=null;
+  if(p.mentor_id){const{data}=await db.from('users').select('name').eq('id',p.mentor_id).single();if(data)mentorName=data.name;}
+  const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',p.id);
+  const passed=(bpData||[]).filter(b=>b.passed&&b.confirmed_by).length;
+  const pct=Math.round((passed/5)*100);
+  const level=passed===0?'Стажёр':passed<5?'Новичок':'Профи';
+  if(!mentorName){
+    setMainHTML(`
+      <div class="welcome-banner"><div class="wb-greeting">Добро пожаловать, <span>${p.name.split(' ')[0]}</span></div><div class="wb-sub">Аккаунт создан. Ожидай назначения наставника.</div></div>
+      <div class="wait-screen">
+        <div class="wait-icon">⏳</div>
+        <div class="wait-title">Ожидание наставника</div>
+        <div class="wait-sub">Администратор назначит тебе наставника. После этого обучение начнётся.</div>
+        <div class="wait-info">
+          <div class="wi-row"><span class="wi-label">Имя</span><span class="wi-val">${p.name}</span></div>
+          <div class="wi-row"><span class="wi-label">Статус</span><span class="wi-val">Ожидание наставника</span></div>
+          <div class="wi-row"><span class="wi-label">Уровень</span><span class="wi-val">Стажёр</span></div>
+        </div>
+        <br><button class="btn-small" onclick="renderTraineeDashboard()">🔄 Обновить</button>
+      </div>
+    `);return;
+  }
+  setMainHTML(`
+    <div class="welcome-banner">
+      <div class="wb-greeting">Добро пожаловать, <span>${p.name.split(' ')[0]}</span></div>
+      <div class="wb-sub">Продолжай обучение — ты на пути к статусу Профи.</div>
+      <div class="wb-mentor"><div style="font-size:20px">👨‍🏫</div><div><div class="wb-mentor-label">Твой наставник</div><div class="wb-mentor-name">${mentorName}</div></div></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">${passed}</div><div class="stat-label">Блоков сдано</div></div>
+      <div class="stat-card"><div class="stat-num">${5-passed}</div><div class="stat-label">Осталось</div></div>
+      <div class="stat-card"><div class="stat-num">${pct}%</div><div class="stat-label">Готовность</div></div>
+    </div>
+    <div class="card"><div class="card-title">📊 Прогресс · ${level}</div>
+      <div class="prog-wrap"><div class="prog-label"><span>${passed} из 5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div>
+    </div>
+    <div class="card-section" style="padding:0 0 8px">Блоки обучения</div>
+    <div class="blocks-grid" id="blocksGrid"></div>
+  `);
+  renderBlocksGrid(bpData||[]);
+}
+
+async function renderBlocksList(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',currentProfile.id);
+  const isMentor=currentProfile.role==='mentor';
+  setMainHTML(`<div class="page-title">📚 ${isMentor?'Материалы':'Блоки обучения'}</div><div class="blocks-grid" id="blocksGrid"></div>`);
+  renderBlocksGrid(bpData||[],isMentor);
+}
+
+function renderBlocksGrid(bpData,allUnlocked=false){
+  const grid=document.getElementById('blocksGrid');if(!grid)return;
+  grid.innerHTML=BLOCKS.map(b=>{
+    const bp=bpData.find(x=>x.block_id===b.id);
+    const done=bp?.passed&&bp?.confirmed_by;
+    const pending=bp?.passed&&!bp?.confirmed_by;
+    const prev=b.id===1||bpData.find(x=>x.block_id===b.id-1&&x.passed&&x.confirmed_by);
+    const unlocked=allUnlocked||(prev&&!done)||done;
+    let sc='locked',st='🔒 Заблокирован';
+    if(done){sc='done';st='✓ Сдан';}
+    else if(pending){sc='pending';st='⏳ Ожидает подтверждения';}
+    else if(unlocked){sc='open';st='→ Открыт';}
+    return`<div class="block-card ${done?'done':unlocked?'unlocked':'locked'}" onclick="${unlocked||done?'openBlock('+b.id+')':''}">
+      <div class="bc-num">${b.id}</div><div class="bc-icon">${b.icon}</div>
+      <div class="bc-title">Блок ${b.id}: ${b.title}</div>
+      <div class="bc-desc">${b.desc}</div>
+      <span class="bc-status ${sc}">${st}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── BLOCK VIEW ──
+let activeBlockId=null,quizState=null;
+
+function openBlock(id){activeBlockId=id;renderBlockView(id);}
+function renderBlockView(id){
+  const b=BLOCKS.find(x=>x.id===id);
+  const hasCheck=id===2;
+  const isMentor=currentProfile.role==='mentor';
+  const backFn = isMentor ? 'renderBlocksList()' : 'renderTraineeDashboard()';
+  document.getElementById('mainArea').innerHTML=`
+    <div class="block-header-bar">
+      <div class="bh-back" onclick="${backFn}">← Назад</div>
+      <div class="bh-title">${b.icon} ${b.title}</div>
+      <div class="bh-tabs">
+        <button class="tab-btn active" id="tab-material" onclick="switchBlockTab('material',${id})">📖 Материал</button>
+        <button class="tab-btn" id="tab-quiz" onclick="switchBlockTab('quiz',${id})">🧠 Тест</button>
+        ${hasCheck?'<button class="tab-btn" id="tab-check" onclick="switchBlockTab(\'check\','+id+')">✅ Чек-листы</button>':''}
+      </div>
+    </div>
+    <div class="block-body" id="blockBody"></div>
+  `;
+  renderMaterial(id);
+}
+function switchBlockTab(tab,id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab)?.classList.add('active');
+  if(tab==='material')renderMaterial(id);
+  else if(tab==='quiz')startQuiz(id);
+  else renderChecklist(id);
+}
+
+// ── MATERIAL ──
+const MATERIAL={
+1:`<div class="content-section"><div class="section-title">Кто такой официант в Шатёре</div><p style="color:var(--text-dim);font-size:14px;line-height:1.8;margin-bottom:14px">Официант — это первое и последнее впечатление которое гость уносит. Не кухня, не интерьер — именно ты.</p><div class="callout">Этот документ — стандарт профессионала.</div></div>
+<div class="content-section"><div class="section-title">1. Внешний вид</div><table class="content-table"><tr><th>Элемент</th><th>Требование</th></tr><tr><td>Рубашка</td><td>Чёрная, чистая, отутюженная</td></tr><tr><td>Брюки</td><td>Чёрные, классика, отутюженные</td></tr><tr><td>Обувь</td><td>Чёрная, закрытая, чистая</td></tr><tr><td>Бейдж</td><td>Слева горизонтально на уровне сердца</td></tr></table>
+<div class="section-subtitle">Гигиена</div><ul class="content-ul"><li>Мытьё рук: до работы, после туалета, после еды, после денег.</li><li>Волосы чистые, длинные — в собранном виде.</li><li>Парфюм — едва уловимый. Запах сигарет — нарушение.</li><li>Украшения: только обручальное кольцо и серьги.</li></ul>
+<div class="callout callout-warn">⚠️ Выход без инвентаря — категория А, штраф 300 ₽.</div></div>
+<div class="content-section"><div class="section-title">2. Поведение в зале</div><div class="callout">Правило 5/3 метров: на 5 м — зрительный контакт и улыбка. На 3 м — приветствие словом.</div>
+<div class="section-subtitle">Запрещено</div><ul class="content-ul"><li>Телефон в зале — 300 ₽</li><li>Разговор по телефону — 1000 ₽</li><li>Стоять спиной к гостям — 200 ₽</li><li>Игнорировать гостей — 500 ₽</li><li>Уход без сдачи зоны — 1000 ₽</li></ul></div>
+<div class="content-section"><div class="section-title">3. Штрафы</div><table class="content-table"><tr><th>Нарушение</th><th>Штраф</th></tr><tr><td>Внешний вид / нет инвентаря</td><td style="color:var(--red)">300 ₽</td></tr><tr><td>Опоздание</td><td style="color:var(--red)">300 ₽</td></tr><tr><td>Телефон в зале</td><td style="color:var(--red)">300 ₽</td></tr><tr><td>Нарушение субординации</td><td style="color:var(--red)">500 ₽</td></tr><tr><td>Игнорирование гостя</td><td style="color:var(--red)">500 ₽</td></tr><tr><td>Незнание стоп-листа</td><td style="color:var(--red)">500 ₽</td></tr><tr><td>Разговор по телефону</td><td style="color:var(--red)">1000 ₽</td></tr><tr><td>Уход без сдачи зоны</td><td style="color:var(--red)">1000 ₽</td></tr></table>
+<div class="callout callout-warn">Категория В: хамство, воровство, невыход, опьянение → рассматривается увольнение.</div></div>
+<div class="content-section"><div class="section-title">4. Этический кодекс</div><ul class="content-ul"><li><strong style="color:var(--text)">Держим слово</strong> — пообещал, выполни.</li><li><strong style="color:var(--text)">Гость в приоритете</strong> — любой сотрудник обязан отреагировать.</li><li><strong style="color:var(--text)">Не молчим о проблемах</strong> — увидел, сообщи.</li><li><strong style="color:var(--text)">Помогаем коллегам</strong> — команда как одно целое.</li></ul></div>`,
+2:`<div class="content-section"><div class="section-title">1. Начало смены</div><div class="callout">Пришёл за 15 минут — пришёл вовремя. Пришёл вовремя — опоздал.</div><table class="content-table"><tr><th>Смена</th><th>Когда быть</th><th>Начало</th></tr><tr><td>Утренняя</td><td>На зоне в 08:45</td><td>09:00</td></tr><tr><td>Основная</td><td>Пятиминутка в 10:45</td><td>11:00</td></tr></table><div class="callout callout-warn">Покушать до смены. Голодный официант раздражителен и невнимателен.</div></div>
+<div class="content-section"><div class="section-title">2. Открытие цехов</div><table class="content-table"><tr><th>Время</th><th>Цех</th><th>Закрытие</th></tr><tr><td>09:00</td><td>Кухня (завтраки)</td><td>12:00</td></tr><tr><td>09:00</td><td>Бар — все напитки</td><td>22:30</td></tr><tr><td>10:00</td><td>Основная кухня</td><td>22:30</td></tr><tr><td>11:00</td><td>Мангал — последний заказ до 22:00</td><td>22:00</td></tr><tr><td>11:00</td><td>Зона стейков</td><td>22:00</td></tr></table><div class="callout">Цех не открылся — не говори «нет». Называй время и предлагай альтернативу.</div></div>
+<div class="content-section"><div class="section-title">3. Ритм дня</div><ul class="content-ul"><li>После каждого стола — быстрая уборка зоны, сразу.</li><li>Замечаешь проблему — сразу к администратору.</li><li>Перерыв — по очереди, не более 20 минут, зона под присмотром.</li><li>Курить — только в отведённом месте. После — руки и освежить дыхание.</li></ul></div>
+<div class="content-section"><div class="section-title">4. Конец смены</div><div class="callout">Зона сдаётся в том состоянии, в котором хотел бы принять её сам.</div><ul class="content-ul"><li>Подойти лично: «Зона готова, чек-лист закрыт».</li><li>Администратор проверяет. Замечания — устранить до ухода.</li></ul><div class="callout callout-warn">Уйти без сдачи зоны — штраф 1000 ₽.</div></div>`,
+3:`<div class="content-section"><div class="section-title">7 шагов гостеприимства</div>${[['1','Встреча и аперитив','до 1 мин','Приветствуй с улыбкой сразу. Предложи напитки. Аперитив — первый инструмент продажи.'],['2','Принятие заказа','5–7 мин','Правило Эхо: зачитай заказ вслух перед отправкой — исключает ошибки.'],['3','Напитки и хлеб','3–5 мин','Напитки — первыми. Бутылки — только за столом. Хлеб — только после основного заказа.'],['4','Вынос блюд','—','Очерёдность: дети → женщины → мужчины → хозяин. Называй блюдо гостю. При задержке — предупреждай сам.'],['5','Чек-бэк','2–3 мин','«Всё ли по вашему вкусу?» Недоволен — сразу к администратору.'],['6','Десерты','—','Стол полностью очищен. Называй конкретные позиции, не «хотите ли».'],['7','Расчёт','1–2 мин','Счёт в папке за 1 мин. Сдача — всегда полная. Стол пересервировать за 3 мин.']].map(([n,t,time,d])=>`<div style="display:flex;gap:14px;padding:14px;background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;margin-bottom:8px"><div style="width:34px;height:34px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:Cormorant Garamond,serif;font-size:17px;font-weight:700;color:var(--gold);flex-shrink:0">${n}</div><div><div style="font-weight:600;color:var(--text);margin-bottom:3px">${t}</div>${time!=='—'?'<div style="font-size:11px;color:var(--gold);margin-bottom:5px">⏱ '+time+'</div>':''}<div style="font-size:13px;color:var(--text-dim)">${d}</div></div></div>`).join('')}</div>
+<div class="content-section"><div class="section-title">Сервировка</div><table class="content-table"><tr><th>Элемент</th><th>Стандарт</th></tr><tr><td>Нож</td><td>Справа, лезвием к тарелке</td></tr><tr><td>Вилка</td><td>Слева, зубцами вниз</td></tr><tr><td>Бокал</td><td>Правее и выше. Держать только за ножку.</td></tr></table></div>
+<div class="content-section"><div class="section-title">Работа с подносом</div><ul class="content-ul"><li>Одна рука снизу, ладонь по центру, пальцы разведены.</li><li>Уровень груди. Спина прямая, движение плавное.</li><li>Тяжёлое — в центр, лёгкое — по краям.</li><li>Нельзя: под мышкой, над головами гостей, смотреть на поднос.</li></ul></div>`,
+4:`<div class="content-section"><div class="section-title">1. ВУЗУ</div>${[['В — Внимание','Знать гостей по имени, подходить сразу, интересоваться торопится ли.'],['У — Уважение','Благодарить за визит, выслушивать до конца, не унижать.'],['З — Забота','Детский стульчик без просьбы, плед если холодно. Действие раньше просьбы.'],['У — Улыбка','При первом контакте обязательна. Обращение «Вы» — всегда.']].map(([n,d])=>`<div style="background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;padding:14px 18px;margin-bottom:8px"><div style="font-weight:600;color:var(--gold);font-size:13px;margin-bottom:4px">${n}</div><div style="font-size:13px;color:var(--text-dim)">${d}</div></div>`).join('')}<div class="callout">ВУЗУ — образ мышления. Официант с ВУЗУ продаёт больше потому что гость ему доверяет.</div></div>
+<div class="content-section"><div class="section-title">2. Техники продаж</div>${[['Кивок Салливана','Лёгкий кивок на нужную позицию при перечислении.','«Воду без газа, с газом (кивок) или сок?»'],['Метод Штирлица','Выгодные позиции — в начало и конец списка.','«Гранатовый, яблочный, апельсиновый, ананасовый»'],['Цепочка','Веди по логике: основное → гарнир → соус → напиток → десерт.','«К стейку — картофель. Из соусов — сырный или грибной»'],['Апселл','Предложи улучшенную версию.','«К Цезарю добавим креветки?»'],['Альтернатива','Нет блюда — сразу замена с описанием.','«Рибай закончился, есть Нью-Йорк — похожий по вкусу»'],['Без «не»','Вопросы с «не» провоцируют «нет».','❌ «Не желаете десерт?» → ✅ «Медовик или чизкейк?»']].map(([n,d,ex])=>`<div style="background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;padding:14px 18px;margin-bottom:8px"><div style="font-weight:600;color:var(--gold);font-size:13px;margin-bottom:5px">${n}</div><div style="font-size:13px;color:var(--text-dim);margin-bottom:8px">${d}</div><div style="background:var(--dark2);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--text-dim);border-left:2px solid var(--gold);font-style:italic">${ex}</div></div>`).join('')}</div>
+<div class="content-section"><div class="section-title">3. Запрещённые слова</div><table class="content-table"><tr><th style="color:var(--red)">❌ Запрещено</th><th style="color:var(--green)">✅ Правильно</th></tr><tr><td>Не желаете десерт?</td><td>Что принести на десерт?</td></tr><tr><td>Вы доели?</td><td>Могу убрать?</td></tr><tr><td>Не знаю</td><td>Сейчас уточню</td></tr><tr><td>Нет / Нельзя</td><td>К сожалению недоступно, могу предложить...</td></tr><tr><td>Подождите</td><td>Одну минуту, я уже иду</td></tr><tr><td>Всё?</td><td>Что-то ещё принести?</td></tr></table></div>`,
+5:`<div class="content-section"><div class="section-title">1. Алгоритм ВПИО</div>${[['В','#5A9A6A','Выслушай','Дай гостю высказаться полностью. Кивай, не перебивай.'],['П','#4A7AB5','Прими извинения','«Прошу прощения, это недопустимо, я исправлю» — без объяснений.'],['И','#C84A3A','Исправь','Предложи решение или зови администратора. Не тяни.'],['О','#5A9A6A','Отблагодари','«Спасибо что сообщили — помогает нам стать лучше».']].map(([l,c,n,d])=>`<div style="display:flex;gap:12px;background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;padding:14px 18px;margin-bottom:8px"><div style="width:38px;height:38px;border-radius:8px;background:${c};color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0">${l}</div><div><div style="font-weight:600;color:var(--text);margin-bottom:3px">${n}</div><div style="font-size:13px;color:var(--text-dim)">${d}</div></div></div>`).join('')}<div class="callout callout-warn">Никогда не обещай скидку без администратора.</div></div>
+<div class="content-section"><div class="section-title">2. Типичные ситуации</div><div style="background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;padding:16px 18px;margin-bottom:10px"><div style="font-weight:600;color:var(--text);margin-bottom:8px">С1. Гость недоволен блюдом</div><ul class="content-ul"><li>Выслушай, не оправдывай кухню.</li><li>Извинись немедленно.</li><li>Администратору — сразу.</li><li>Не съедено &gt;25% — блюдо меняется (решает администратор).</li></ul></div><div style="background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;padding:16px 18px;margin-bottom:10px"><div style="font-weight:600;color:var(--text);margin-bottom:8px">С2. Агрессия</div><ul class="content-ul"><li>Голос тихий и спокойный.</li><li>Молчание и кивок — твоё оружие.</li><li>Когда замолчал — предложи решение или зови администратора.</li></ul></div><div style="background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;padding:16px 18px"><div style="font-weight:600;color:var(--text);margin-bottom:8px">С3. Гость не может заплатить</div><ul class="content-ul"><li>Спокойствие и уважительный тон.</li><li>Немедленно — администратору.</li><li>Не обвиняй, не создавай сцену.</li></ul></div></div>
+<div class="content-section"><div class="section-title">3. ЧП</div><table class="content-table"><tr><th>ЧП</th><th>Действия</th></tr><tr><td>Пожар</td><td>Сигнализация → спокойно попросить покинуть зал. МЧС: 101</td></tr><tr><td>Гость без сознания</td><td>Администратор + скорая 112. Освободить пространство.</td></tr><tr><td>Посторонний предмет в блюде</td><td>Извиниться, убрать блюдо (не выбрасывать!), администратору немедленно.</td></tr></table></div>`,
+6:`<div class="content-section"><div class="section-title">Система уровней</div>${[['🔰','Стажёр','Первая неделя. Изучает основы под наблюдением.'],['📗','Новичок','Проходит аттестацию по блокам 1–5 строго по порядку.'],['⭐','Профи','Автоматически после сдачи всех 5 блоков.'],['👑','Легенда','Пересдача блоков 1–5 + меню по всем разделам на 90%+.']].map(([ic,n,d])=>`<div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--dark3);border:1px solid var(--surface2);border-radius:10px;margin-bottom:8px"><div style="font-size:26px">${ic}</div><div><div style="font-weight:600;color:var(--text)">${n}</div><div style="font-size:12px;color:var(--text-dim);margin-top:2px">${d}</div></div></div>`).join('')}<div class="callout callout-warn">Блоки сдаются строго по порядку. Пересдача — не раньше 3 рабочих дней.</div></div>
+<div class="content-section"><div class="section-title">Формат сдачи</div><table class="content-table"><tr><th>Формат</th><th>Описание</th></tr><tr><td>Устный опрос</td><td>Администратор задаёт вопросы. Без подсказок и документа.</td></tr><tr><td>Ситуационные вопросы</td><td>2–3 реальные ситуации из зала.</td></tr><tr><td>Проверка в смене</td><td>Администратор наблюдает применение стандартов.</td></tr></table></div>
+<div class="content-section"><div class="section-title">Путь к Легенде — меню</div><div class="callout">Минимум 90% по каждому разделу. Один ниже 90% — статус не присваивается.</div><table class="content-table"><tr><th>Раздел</th><th>Минимум</th></tr><tr><td>Закуски и салаты</td><td>90%</td></tr><tr><td>Супы</td><td>90%</td></tr><tr><td>Горячие блюда</td><td>90%</td></tr><tr><td>Мангал и стейки</td><td>90%</td></tr><tr><td>Гарниры и соусы</td><td>90%</td></tr><tr><td>Десерты</td><td>90%</td></tr><tr><td>Напитки</td><td>90%</td></tr><tr><td>Завтраки</td><td>90%</td></tr></table></div>`
+};
+
+function renderMaterial(id){document.getElementById('blockBody').innerHTML=`<div class="fade-in">${MATERIAL[id]||'<p class="text-dim">Материал загружается...</p>'}</div>`;}
+
+// ── QUIZ ──
+function startQuiz(id){quizState={id,current:0,answers:[],selected:null,done:false};renderQuizQ();}
+
+function goBack(){
+  if(currentProfile.role==='mentor')renderBlocksList();
+  else renderTraineeDashboard();
+}
+function renderQuizQ(){
+  const qs=quizState,q=QUIZZES[qs.id]?.[qs.current],total=QUIZZES[qs.id]?.length||0,body=document.getElementById('blockBody');
+  if(qs.done){
+    const correct=qs.answers.filter(a=>a).length,pct=Math.round((correct/total)*100),pass=pct>=70;
+    body.innerHTML=`<div class="quiz-wrap fade-in"><div class="quiz-result"><div class="res-score">${pct}%</div><div class="res-label">${correct} из ${total} правильных</div><div class="res-verdict ${pass?'pass':'fail'}">${pass?'✓ Зачёт':'✗ Не зачёт'}</div><div class="res-hint">${pass?'Отлично! Результат сохранён.':'Изучи материал и попробуй снова. Нужно минимум 70%.'}</div>${pass&&currentProfile.role==='trainee'?'<div class="res-note">⏳ Ожидай подтверждения администратора.</div>':''}<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn-quiz" onclick="startQuiz(${qs.id})">Пройти снова</button>${pass?'<button class="btn-ghost" onclick="goBack()">Назад</button>':''}</div></div></div>`;
+    if(pass&&currentProfile.role==='trainee')saveBlockResult(qs.id,pct);return;
+  }
+  if(!q)return;
+  const letters=['А','Б','В','Г'];
+  body.innerHTML=`<div class="quiz-wrap fade-in"><div class="q-prog"><div class="q-prog-bar"><div class="q-prog-fill" style="width:${(qs.current/total)*100}%"></div></div><div class="q-prog-txt">Вопрос ${qs.current+1} из ${total}</div></div><div class="quiz-q"><div class="q-label">Вопрос ${qs.current+1}</div><div class="q-text">${q.q}</div><div class="q-opts">${q.opts.map((o,i)=>`<div class="q-opt" id="opt${i}" onclick="selectOpt(${i})"><span class="q-opt-l">${letters[i]}</span>${o}</div>`).join('')}</div><div class="q-exp" id="qexp"></div></div><div class="quiz-actions"><button class="btn-quiz" id="btnNext" onclick="nextQ()" disabled>${qs.current<total-1?'Следующий →':'Завершить'}</button></div></div>`;
+}
+function selectOpt(i){
+  if(quizState.selected!==null)return;
+  quizState.selected=i;
+  const q=QUIZZES[quizState.id][quizState.current],correct=i===q.c;
+  quizState.answers.push(correct);
+  document.querySelectorAll('.q-opt').forEach((el,idx)=>{if(idx===q.c)el.classList.add('correct');if(idx===i&&!correct)el.classList.add('wrong');});
+  const exp=document.getElementById('qexp');exp.textContent=q.e;exp.className=`q-exp show ${correct?'good':'bad'}`;
+  document.getElementById('btnNext').disabled=false;
+}
+function nextQ(){quizState.current++;quizState.selected=null;if(quizState.current>=(QUIZZES[quizState.id]?.length||0))quizState.done=true;renderQuizQ();}
+async function saveBlockResult(blockId,score){
+  const uid=currentProfile.id;
+  const{data:ex}=await db.from('block_progress').select('id').eq('user_id',uid).eq('block_id',blockId).single();
+  if(ex){await db.from('block_progress').update({passed:true,score}).eq('id',ex.id);}
+  else{await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:true,score});}
+}
+
+// ── CHECKLIST ──
+const CLDATA={
+  open:{name:'Чек-лист открытия зоны',items:['Часы заряжены, надеты на руку','Бейджик горизонтально на уровне сердца','Форма опрятная, обувь чистая','Соль и перец засыпаны, солонки чистые','Салфетки заложены в органайзер','Диваны почищены щёткой','Стейшены убраны и укомплектованы','Изучить стоп-лист и старт-лист']},
+  close:{name:'Чек-лист закрытия зоны',items:['Часы сняты, поставлены на зарядку','Бейджик проверен — нет дефектов','Внутри стейшена нет лишних вещей','Стейшены заполнены и расставлены','Соль и перец засыпаны до верха','Салфетки заложены в органайзер','Скатерть на каждом столе ровно','На столах нет крошек и грязи','Диваны почищены щёткой','Передать администратору информацию о готовности']}
+};
+function renderChecklist(blockId){
+  const uid=currentProfile.id;
+  function getCL(k){return JSON.parse(localStorage.getItem(`cl_${uid}_${k}`)||'{}');}
+  function saveCL(k,s){localStorage.setItem(`cl_${uid}_${k}`,JSON.stringify(s));}
+  function renderCL(){
+    document.getElementById('blockBody').innerHTML='<div class="fade-in">'+Object.entries(CLDATA).map(([key,cl])=>{
+      const s=getCL(key),dc=Object.values(s).filter(Boolean).length;
+      return`<div class="card"><div class="flex-between" style="margin-bottom:16px"><div class="card-title" style="margin:0">${cl.name}</div><div style="font-size:12px;color:var(--text-dim)">${dc}/${cl.items.length}</div></div>${cl.items.map((item,i)=>`<div class="cl-item ${s[i]?'done':''}" onclick="toggleCL('${key}',${i})"><div class="cl-box">${s[i]?'<svg width="10" height="10" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div class="cl-text">${item}</div></div>`).join('')}<button class="btn-small-ghost" style="margin-top:8px" onclick="resetCL('${key}')">Сбросить</button></div>`;
+    }).join('')+'</div>';
+  }
+  window.toggleCL=(k,i)=>{const s=getCL(k);s[i]=!s[i];saveCL(k,s);renderCL();};
+  window.resetCL=(k)=>{saveCL(k,{});renderCL();};
+  renderCL();
+}
+
+// ── TRAINEE PROGRESS ──
+async function renderTraineeProgress(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',currentProfile.id);
+  const passed=(bpData||[]).filter(b=>b.passed&&b.confirmed_by).length,pct=Math.round((passed/5)*100);
+  setMainHTML(`<div class="page-title">📊 Мой прогресс</div><div class="card"><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passed} из 5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div></div><table class="content-table" style="margin-top:16px"><tr><th>Блок</th><th>Тест</th><th>Подтверждение</th></tr>${BLOCKS.slice(0,5).map(b=>{const bp=(bpData||[]).find(x=>x.block_id===b.id);return`<tr><td>${b.icon} ${b.title}</td><td>${bp?.passed?`✓ ${bp.score}%`:'—'}</td><td>${bp?.confirmed_by?'✓ Подтверждён':'⏳ Ожидает'}</td></tr>`;}).join('')}</table>`);
+}
+
+// ── MENTOR ──
+async function renderMentorDashboard(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:trainees}=await db.from('users').select('*').eq('mentor_id',currentProfile.id);
+  const count=(trainees||[]).length,stars=currentProfile.notes?parseInt(currentProfile.notes)||0:0;
+  setMainHTML(`<div class="page-title">👨‍🏫 Панель наставника</div><div class="page-sub">${currentProfile.name}</div><div class="stats-row"><div class="stat-card"><div class="stat-num">${count}</div><div class="stat-label">Стажёров</div></div><div class="stat-card"><div class="stat-num">${stars}</div><div class="stat-label">Звёзд ⭐</div></div><div class="stat-card"><div class="stat-num">${2-count}</div><div class="stat-label">Свободных мест</div></div></div><div class="card-section" style="padding:0 0 8px;margin-top:8px">Мои стажёры</div>${count===0?'<div class="callout">Стажёры пока не назначены.</div>':(trainees||[]).map(t=>traineeCardHTML(t)).join('')}`);
+  for(const t of trainees||[])loadTraineeBP(t);
+}
+async function renderMentorTrainees(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:trainees}=await db.from('users').select('*').eq('mentor_id',currentProfile.id);
+  if(!trainees?.length){setMainHTML('<div class="page-title">👥 Мои стажёры</div><div class="callout">Стажёры пока не назначены.</div>');return;}
+  setMainHTML(`<div class="page-title">👥 Мои стажёры</div><div id="traineesList">${trainees.map(t=>traineeCardHTML(t)).join('')}</div>`);
+  for(const t of trainees)loadTraineeBP(t);
+}
+function traineeCardHTML(t){return`<div class="trainee-card" id="tc-${t.id}"><div class="tc-header"><div class="tc-avatar">${(t.name||'?')[0].toUpperCase()}</div><div><div class="tc-name">${t.name}</div><div class="tc-meta">Стажёр</div></div></div><div class="blocks-mini" id="bm-${t.id}"><span style="font-size:12px;color:var(--text-faint)">Загрузка...</span></div><div id="ho-${t.id}"></div></div>`;}
+async function loadTraineeBP(t){
+  const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',t.id);
+  const bmEl=document.getElementById(`bm-${t.id}`);if(!bmEl)return;
+  bmEl.innerHTML=BLOCKS.slice(0,5).map(b=>{const bp=(bpData||[]).find(x=>x.block_id===b.id);let cls='bm-locked',txt=`Б${b.id}`;if(bp?.passed&&bp?.confirmed_by){cls='bm-done';txt=`Б${b.id} ✓`;}else if(bp?.passed&&!bp?.confirmed_by){cls='bm-needs-confirm';txt=`Б${b.id} ⏳`;}return`<span class="bm ${cls}">${txt}</span>`;}).join('');
+  const b2=(bpData||[]).find(x=>x.block_id===2&&x.passed&&x.confirmed_by);
+  const b5=(bpData||[]).find(x=>x.block_id===5&&x.passed&&x.confirmed_by);
+  const{data:existingHO}=await db.from('handover').select('*').eq('trainee_id',t.id).eq('from_mentor_id',currentProfile.id);
+  const hoEl=document.getElementById(`ho-${t.id}`);if(!hoEl)return;
+  if(b5){hoEl.innerHTML='<div class="callout callout-green" style="margin-top:12px">✓ Обучение завершено. Ожидай премию 1 500 ₽ и ⭐.</div>';}
+  else if(b2&&!existingHO?.length){hoEl.innerHTML=`<div class="callout" style="margin-top:12px">Блок 2 сдан. Заполни лист передачи для Наставника 2.</div><div class="mt8"><textarea class="form-textarea" id="ho-notes-${t.id}" placeholder="Сильные стороны, что нужно усилить, особенности характера..."></textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn-small" onclick="submitHandover('${t.id}')">Передать стажёра</button></div></div>`;}
+  else if(existingHO?.length){hoEl.innerHTML='<div class="callout callout-green" style="margin-top:12px">✓ Стажёр передан. Ожидай ⭐ и премию 1 000 ₽.</div>';}
+}
+async function submitHandover(traineeId){
+  const notes=document.getElementById(`ho-notes-${traineeId}`)?.value?.trim();
+  if(!notes){alert('Заполни лист передачи');return;}
+  await db.from('handover').insert({trainee_id:traineeId,from_mentor_id:currentProfile.id,notes});
+  alert('Лист передачи сохранён. Администратор назначит Наставника 2.');
+  renderMentorDashboard();
+}
+
+// ── ADMIN ──
+async function renderAdminDashboard(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:users}=await db.from('users').select('*');
+  const trainees=(users||[]).filter(u=>u.role==='trainee'),mentors=(users||[]).filter(u=>u.role==='mentor');
+  const{data:bpAll}=await db.from('block_progress').select('*');
+  const confirmed=(bpAll||[]).filter(b=>b.passed&&b.confirmed_by).length,pending=(bpAll||[]).filter(b=>b.passed&&!b.confirmed_by).length;
+  const noMentor=trainees.filter(t=>!t.mentor_id);
+  setMainHTML(`<div class="page-title">👑 Панель администратора</div><div class="stats-row"><div class="stat-card"><div class="stat-num">${trainees.length}</div><div class="stat-label">Стажёров</div></div><div class="stat-card"><div class="stat-num">${mentors.length}</div><div class="stat-label">Наставников</div></div><div class="stat-card"><div class="stat-num">${confirmed}</div><div class="stat-label">Блоков сдано</div></div><div class="stat-card"><div class="stat-num">${pending}</div><div class="stat-label">Ожидают подтверждения</div></div></div>${pending>0?`<div class="callout" style="cursor:pointer" onclick="showPage('confirm')">⚡ ${pending} блок(а) ожидают подтверждения → перейти</div>`:''}<div class="card-section" style="padding:0 0 8px;margin-top:8px">Стажёры без наставника (${noMentor.length})</div>${noMentor.length===0?'<div class="callout callout-green">Все стажёры назначены.</div>':noMentor.map(t=>`<div class="trainee-row"><div class="tr-avatar">${(t.name||'?')[0].toUpperCase()}</div><div><div class="tr-name">${t.name}</div><div class="tr-meta">Ожидает наставника</div></div><div class="tr-actions"><select class="form-select" id="msel-${t.id}" style="width:180px;padding:6px 10px"><option value="">Выбрать наставника</option>${mentors.map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><button class="btn-small" onclick="assignMentor('${t.id}')">Назначить</button></div></div>`).join('')}`);
+}
+async function assignMentor(tid){
+  const mid=document.getElementById(`msel-${tid}`)?.value;
+  if(!mid){alert('Выбери наставника');return;}
+  await db.from('users').update({mentor_id:mid}).eq('id',tid);
+  alert('Наставник назначен');renderAdminDashboard();
+}
+
+async function renderAdminTrainees(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:trainees}=await db.from('users').select('*').eq('role','trainee');
+  const{data:bpAll}=await db.from('block_progress').select('*');
+  const{data:mentors}=await db.from('users').select('*').eq('role','mentor');
+  setMainHTML(`<div class="page-title">👥 Все стажёры</div><div class="page-sub">${trainees?.length||0} человек</div>${(trainees||[]).map(t=>{const mentor=(mentors||[]).find(m=>m.id===t.mentor_id),tBP=(bpAll||[]).filter(b=>b.user_id===t.id),passedCount=tBP.filter(b=>b.passed&&b.confirmed_by).length,pct=Math.round((passedCount/5)*100);return`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(t.name||'?')[0].toUpperCase()}</div><div style="flex:1"><div class="tc-name">${t.name}</div><div class="tc-meta">${mentor?`Наставник: ${mentor.name}`:'Без наставника'}</div></div><span class="badge ${passedCount>=5?'badge-green':passedCount>0?'badge-gold':'badge-gray'}">${passedCount>=5?'Профи':passedCount>0?'Новичок':'Стажёр'}</span></div><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passedCount}/5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div><div class="blocks-mini">${BLOCKS.slice(0,5).map(b=>{const bp=tBP.find(x=>x.block_id===b.id);let cls='bm-locked',txt=`Б${b.id}`;if(bp?.passed&&bp?.confirmed_by){cls='bm-done';txt=`Б${b.id} ✓`;}else if(bp?.passed&&!bp?.confirmed_by){cls='bm-needs-confirm';txt=`Б${b.id} ⏳`;}return`<span class="bm ${cls}">${txt}</span>`;}).join('')}</div></div>`;}).join('')||'<div class="callout">Стажёров пока нет.</div>'}`);
+}
+
+async function renderAdminMentors(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:mentors}=await db.from('users').select('*').eq('role','mentor');
+  const{data:trainees}=await db.from('users').select('*').eq('role','trainee');
+  setMainHTML(`<div class="page-title">👨‍🏫 Наставники</div>${(mentors||[]).map(m=>{const myT=(trainees||[]).filter(t=>t.mentor_id===m.id),stars=m.notes?parseInt(m.notes)||0:0;return`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(m.name||'?')[0].toUpperCase()}</div><div style="flex:1"><div class="tc-name">${m.name}</div><div class="tc-meta">Стажёров: ${myT.length}/2 · ${stars} ⭐</div></div><span class="badge ${stars>=10?'badge-gold':'badge-blue'}">${stars>=10?'Старший наставник':'Наставник'}</span></div>${myT.length?`<div class="blocks-mini">${myT.map(t=>`<span class="bm bm-pending">👤 ${t.name}</span>`).join('')}</div>`:'<div style="font-size:12px;color:var(--text-faint);margin-top:8px">Нет стажёров</div>'}<div class="mt8 flex-row"><button class="btn-small" onclick="addStar('${m.id}',${stars})">⭐ Добавить звезду</button></div></div>`;}).join('')||'<div class="callout">Наставников пока нет.</div>'}`);
+}
+async function addStar(id,cur){const n=cur+1;await db.from('users').update({notes:String(n)}).eq('id',id);alert(`⭐ Звезда добавлена. Итого: ${n}`);renderAdminMentors();}
+
+async function renderAdminConfirm(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:pending}=await db.from('block_progress').select('*,users(name)').eq('passed',true).is('confirmed_by',null);
+  const{data:handovers}=await db.from('handover').select('*,trainee:users!handover_trainee_id_fkey(name,id),from_mentor:users!handover_from_mentor_id_fkey(name,id)').is('to_mentor_id',null);
+  const{data:allMentors}=await db.from('users').select('*').eq('role','mentor');
+  setMainHTML(`<div class="page-title">✅ Подтверждения</div>
+    <div class="card-section" style="padding:0 0 8px">Тесты ожидающие подтверждения (${pending?.length||0})</div>
+    ${pending?.length?pending.map(bp=>`<div class="trainee-row"><div class="tr-avatar">${(bp.users?.name||'?')[0]?.toUpperCase()}</div><div><div class="tr-name">${bp.users?.name||'—'}</div><div class="tr-meta">Блок ${bp.block_id} · ${bp.score}%</div></div><div class="tr-actions"><button class="btn-small" onclick="confirmBlock('${bp.id}')">✓ Подтвердить</button><button class="btn-danger" onclick="rejectBlock('${bp.id}')">✗ Отклонить</button></div></div>`).join(''):'<div class="callout callout-green">Нет ожидающих подтверждений.</div>'}
+    <div class="divider"></div>
+    <div class="card-section" style="padding:0 0 8px">Листы передачи (${handovers?.length||0})</div>
+    ${handovers?.length?handovers.map(h=>`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(h.trainee?.name||'?')[0]?.toUpperCase()}</div><div style="flex:1"><div class="tc-name">${h.trainee?.name||'—'}</div><div class="tc-meta">От наставника: ${h.from_mentor?.name||'—'}</div></div></div><div style="background:var(--dark2);border-radius:8px;padding:12px;font-size:13px;color:var(--text-dim);margin-bottom:12px">${h.notes||'—'}</div><div class="flex-row"><select class="form-select" id="m2sel-${h.id}" style="width:200px;padding:6px 10px"><option value="">Выбрать наставника 2</option>${(allMentors||[]).map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><button class="btn-small" onclick="confirmHandover('${h.id}','${h.trainee?.id||''}','${h.from_mentor?.id||''}')">Назначить наставника 2</button></div></div>`).join(''):'<div class="callout callout-green">Нет листов передачи.</div>'}`);
+}
+async function confirmBlock(id){await db.from('block_progress').update({confirmed_by:'admin',confirmed_at:new Date().toISOString()}).eq('id',id);alert('Блок подтверждён');renderAdminConfirm();}
+async function rejectBlock(id){await db.from('block_progress').update({passed:false}).eq('id',id);alert('Блок отклонён — стажёр должен пересдать');renderAdminConfirm();}
+async function confirmHandover(hoId,traineeId,fromMentorId){
+  const mid=document.getElementById(`m2sel-${hoId}`)?.value;
+  if(!mid){alert('Выбери наставника 2');return;}
+  await db.from('users').update({mentor_id:mid}).eq('id',traineeId);
+  await db.from('handover').update({to_mentor_id:mid}).eq('id',hoId);
+  const{data:m1}=await db.from('users').select('notes').eq('id',fromMentorId).single();
+  const s=m1?.notes?parseInt(m1.notes)||0:0;
+  await db.from('users').update({notes:String(s+1)}).eq('id',fromMentorId);
+  alert('Наставник 2 назначен. Наставнику 1 добавлена ⭐ (премию 1000 ₽ выдай вручную).');
+  renderAdminConfirm();
+}
+
+// ── MOBILE ──
+document.getElementById('mobileToggle').onclick=()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open');};
+document.getElementById('sidebarOverlay').onclick=closeMobileSidebar;
+function closeMobileSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
+
+// ── AUTO LOGIN ──
+(async()=>{
+  // Check if supabase loaded
+  if(typeof supabase === 'undefined') {
+    document.body.innerHTML = '<div style="background:#0E0D0B;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif"><div style="background:#1E1B16;border:1px solid #C9A84C;border-radius:16px;padding:40px;max-width:480px;text-align:center"><div style="font-size:40px;margin-bottom:16px">⚠️</div><div style="color:#C9A84C;font-family:Cormorant Garamond,serif;font-size:24px;margin-bottom:12px">Нужен веб-сервер</div><div style="color:#A09070;font-size:13px;line-height:1.8;margin-bottom:20px">Файл открыт напрямую (file://). Приложение работает только через HTTP.</div><div style="background:#252118;border-radius:8px;padding:16px;font-size:13px;color:#A09070;text-align:left"><div style="color:#C9A84C;margin-bottom:10px;font-weight:600">Как запустить локально:</div><div style="margin-bottom:6px">1. Установи VS Code + расширение Live Server</div><div style="margin-bottom:6px">2. Или: python -m http.server 8080</div><div style="margin-bottom:6px">3. Затем открой http://localhost:8080</div><div style="margin-top:10px;color:#C9A84C">Или загрузи файл на хостинг — тогда работает сразу.</div></div></div></div>';
+    return;
+  }
+  const{data:{session}}=await db.auth.getSession();
+  if(session?.user){
+    currentUser=session.user;
+    const{data}=await db.from('users').select('*').eq('id',session.user.id).single();
+    if(data){currentProfile=data;enterApp();}
+  }
+})();
+</script>
+</body>
+</html>
