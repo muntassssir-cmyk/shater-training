@@ -280,13 +280,21 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min
       <div class="auth-info" id="authInfoBox" style="display:none"></div>
       <div class="form-group"><label class="form-label">Имя и фамилия</label><input class="form-input" id="regName" placeholder="Иван Петров"></div>
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="regEmail" type="email" placeholder="your@email.com"></div>
-      <div class="form-group"><label class="form-label">Пароль</label><input class="form-input" id="regPassword" type="password" placeholder="Минимум 6 символов"></div>
+      <div class="form-group"><label class="form-label">Пароль</label>
+      <div style="position:relative">
+        <input class="form-input" id="regPassword" type="password" placeholder="Минимум 6 символов" style="padding-right:44px">
+        <button type="button" onclick="togglePass('regPassword',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-faint);font-size:13px">👁</button>
+      </div></div>
       <button class="btn-primary" onclick="doRegister()" id="btnRegister">Создать аккаунт</button>
       <div class="auth-toggle">Уже есть аккаунт? <span onclick="toggleAuthMode()">Войти</span></div>
     </div>
     <div id="authFormLogin" class="hidden">
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="loginEmail" type="email" placeholder="your@email.com"></div>
-      <div class="form-group"><label class="form-label">Пароль</label><input class="form-input" id="loginPassword" type="password" placeholder="Пароль"></div>
+      <div class="form-group"><label class="form-label">Пароль</label>
+      <div style="position:relative">
+        <input class="form-input" id="loginPassword" type="password" placeholder="Пароль" style="padding-right:44px">
+        <button type="button" onclick="togglePass('loginPassword',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-faint);font-size:13px">👁</button>
+      </div></div>
       <button class="btn-primary" onclick="doLogin()" id="btnLogin">Войти</button>
       <div class="auth-toggle" id="loginToggle">Нет аккаунта? <span onclick="toggleAuthMode()">Регистрация</span></div>
     </div>
@@ -803,14 +811,14 @@ async function renderAdminTrainees(){
   const{data:trainees}=await db.from('users').select('*').eq('role','trainee');
   const{data:bpAll}=await db.from('block_progress').select('*');
   const{data:mentors}=await db.from('users').select('*').eq('role','mentor');
-  setMainHTML(`<div class="page-title">👥 Все стажёры</div><div class="page-sub">${trainees?.length||0} человек</div>${(trainees||[]).map(t=>{const mentor=(mentors||[]).find(m=>m.id===t.mentor_id),tBP=(bpAll||[]).filter(b=>b.user_id===t.id),passedCount=tBP.filter(b=>b.passed&&b.confirmed_by).length,pct=Math.round((passedCount/5)*100);return`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(t.name||'?')[0].toUpperCase()}</div><div style="flex:1"><div class="tc-name">${t.name}</div><div class="tc-meta">${mentor?`Наставник: ${mentor.name}`:'Без наставника'}</div></div><span class="badge ${passedCount>=5?'badge-green':passedCount>0?'badge-gold':'badge-gray'}">${passedCount>=5?'Профи':passedCount>0?'Новичок':'Стажёр'}</span></div><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passedCount}/5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div><div class="blocks-mini">${BLOCKS.slice(0,5).map(b=>{const bp=tBP.find(x=>x.block_id===b.id);let cls='bm-locked',txt=`Б${b.id}`;if(bp?.passed&&bp?.confirmed_by){cls='bm-done';txt=`Б${b.id} ✓`;}else if(bp?.passed&&!bp?.confirmed_by){cls='bm-needs-confirm';txt=`Б${b.id} ⏳`;}return`<span class="bm ${cls}">${txt}</span>`;}).join('')}</div></div>`;}).join('')||'<div class="callout">Стажёров пока нет.</div>'}`);
+  setMainHTML(`<div class="page-title">👥 Все стажёры</div><div class="page-sub">${trainees?.length||0} человек</div>${(trainees||[]).map(t=>{const mentor=(mentors||[]).find(m=>m.id===t.mentor_id),tBP=(bpAll||[]).filter(b=>b.user_id===t.id),passedCount=tBP.filter(b=>b.passed&&b.confirmed_by).length,pct=Math.round((passedCount/5)*100);return`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(t.name||'?')[0].toUpperCase()}</div><div style="flex:1"><div class="tc-name">${t.name}</div><div class="tc-meta">${mentor?`Наставник: ${mentor.name}`:'Без наставника'}</div></div><span class="badge ${passedCount>=5?'badge-green':passedCount>0?'badge-gold':'badge-gray'}">${passedCount>=5?'Профи':passedCount>0?'Новичок':'Стажёр'}</span></div><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passedCount}/5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div><div class="blocks-mini">${BLOCKS.slice(0,5).map(b=>{const bp=tBP.find(x=>x.block_id===b.id);let cls='bm-locked',txt='Б'+b.id;if(bp?.passed&&bp?.confirmed_by){cls='bm-done';txt='Б'+b.id+' ✓';}else if(bp?.passed&&!bp?.confirmed_by){cls='bm-needs-confirm';txt='Б'+b.id+' ⏳';}return'<span class="bm '+cls+'">'+txt+'</span>';}).join('')}</div><div class="flex-row mt8"><button class="btn-small-ghost" onclick="editUserName('${t.id}','${t.name}')">✏️ Имя</button>${t.mentor_id?`<button class="btn-small-ghost" onclick="removeMentor('${t.id}')">👤 Убрать наставника</button>`:''}<button class="btn-danger" onclick="deleteUser('${t.id}','${t.name}')">🗑 Удалить</button></div></div>`;}).join('')||'<div class="callout">Стажёров пока нет.</div>'}`);
 }
 
 async function renderAdminMentors(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
   const{data:mentors}=await db.from('users').select('*').eq('role','mentor');
   const{data:trainees}=await db.from('users').select('*').eq('role','trainee');
-  setMainHTML(`<div class="page-title">👨‍🏫 Наставники</div>${(mentors||[]).map(m=>{const myT=(trainees||[]).filter(t=>t.mentor_id===m.id),stars=m.notes?parseInt(m.notes)||0:0;return`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(m.name||'?')[0].toUpperCase()}</div><div style="flex:1"><div class="tc-name">${m.name}</div><div class="tc-meta">Стажёров: ${myT.length}/2 · ${stars} ⭐</div></div><span class="badge ${stars>=10?'badge-gold':'badge-blue'}">${stars>=10?'Старший наставник':'Наставник'}</span></div>${myT.length?`<div class="blocks-mini">${myT.map(t=>`<span class="bm bm-pending">👤 ${t.name}</span>`).join('')}</div>`:'<div style="font-size:12px;color:var(--text-faint);margin-top:8px">Нет стажёров</div>'}<div class="mt8 flex-row"><button class="btn-small" onclick="addStar('${m.id}',${stars})">⭐ Добавить звезду</button></div></div>`;}).join('')||'<div class="callout">Наставников пока нет.</div>'}`);
+  setMainHTML(`<div class="page-title">👨‍🏫 Наставники</div>${(mentors||[]).map(m=>{const myT=(trainees||[]).filter(t=>t.mentor_id===m.id),stars=m.notes?parseInt(m.notes)||0:0;return`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(m.name||'?')[0].toUpperCase()}</div><div style="flex:1"><div class="tc-name">${m.name}</div><div class="tc-meta">Стажёров: ${myT.length}/2 · ${stars} ⭐</div></div><span class="badge ${stars>=10?'badge-gold':'badge-blue'}">${stars>=10?'Старший наставник':'Наставник'}</span></div>${myT.length?`<div class="blocks-mini">${myT.map(t=>`<span class="bm bm-pending">👤 ${t.name}</span>`).join('')}</div>`:'<div style="font-size:12px;color:var(--text-faint);margin-top:8px">Нет стажёров</div>'}<div class="mt8 flex-row"><button class="btn-small" onclick="addStar('${m.id}',${stars})">⭐ Добавить звезду</button><button class="btn-small-ghost" onclick="removeStar('${m.id}',${stars})">✕ Убрать звезду</button><button class="btn-danger" onclick="deleteUser('${m.id}','${m.name}')">🗑 Удалить</button></div></div>`;}).join('')||'<div class="callout">Наставников пока нет.</div>'}`);
 }
 async function addStar(id,cur){const n=cur+1;await db.from('users').update({notes:String(n)}).eq('id',id);alert(`⭐ Звезда добавлена. Итого: ${n}`);renderAdminMentors();}
 
@@ -844,6 +852,52 @@ async function confirmHandover(hoId,traineeId,fromMentorId){
 document.getElementById('mobileToggle').onclick=()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open');};
 document.getElementById('sidebarOverlay').onclick=closeMobileSidebar;
 function closeMobileSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
+
+// PASSWORD TOGGLE
+function togglePass(fieldId, btn) {
+  const field = document.getElementById(fieldId);
+  if (field.type === 'password') {
+    field.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    field.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+// ADMIN USER MANAGEMENT
+async function deleteUser(userId, userName) {
+  if (!confirm('Удалить пользователя ' + userName + '? Это действие нельзя отменить.')) return;
+  await db.from('block_progress').delete().eq('user_id', userId);
+  await db.from('handover').delete().or('trainee_id.eq.' + userId + ',from_mentor_id.eq.' + userId + ',to_mentor_id.eq.' + userId);
+  await db.from('users').delete().eq('id', userId);
+  await db.auth.admin?.deleteUser(userId).catch(() => {});
+  alert('Пользователь ' + userName + ' удалён.');
+  renderAdminTrainees();
+}
+
+async function removeStar(mentorId, current) {
+  if (current <= 0) { alert('Звёзд уже нет'); return; }
+  const n = current - 1;
+  await db.from('users').update({ notes: String(n) }).eq('id', mentorId);
+  alert('Звезда убрана. Итого: ' + n);
+  renderAdminMentors();
+}
+
+async function editUserName(userId, currentName) {
+  const newName = prompt('Новое имя:', currentName);
+  if (!newName || newName.trim() === currentName) return;
+  await db.from('users').update({ name: newName.trim() }).eq('id', userId);
+  alert('Имя обновлено');
+  renderAdminTrainees();
+}
+
+async function removeMentor(traineeId) {
+  if (!confirm('Убрать наставника у этого стажёра?')) return;
+  await db.from('users').update({ mentor_id: null }).eq('id', traineeId);
+  alert('Наставник убран');
+  renderAdminTrainees();
+}
 
 // MOBILE
 document.getElementById('mobileToggle').onclick=()=>{
