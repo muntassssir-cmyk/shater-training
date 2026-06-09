@@ -3,16 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Шатёр — Платформа обучения</title>
+<title>Шатёр — Обучение</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-window.onerror = function(msg, src, line, col, err) {
-  document.body.innerHTML = '<div style="background:#0E0D0B;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif"><div style="background:#1E1B16;border:1px solid #322D25;border-radius:16px;padding:40px;max-width:480px;text-align:center"><div style="font-size:32px;margin-bottom:16px">⚠️</div><div style="color:#E8E0D0;font-size:18px;margin-bottom:12px">Ошибка загрузки</div><div style="color:#A09070;font-size:13px;line-height:1.7;margin-bottom:20px">Приложение требует веб-сервера.<br>Нельзя открывать через file://</div><div style="background:#252118;border-radius:8px;padding:16px;font-size:12px;color:#5A5040;text-align:left"><div style="margin-bottom:8px;color:#C9A84C">Как запустить:</div><div>1. Загрузи файл на любой хостинг</div><div>2. Или открой через Live Server в VS Code</div><div>3. Или запусти: python -m http.server 8080</div><div style="margin-top:8px;color:#A09070">Затем открой: http://localhost:8080</div></div><div style="margin-top:16px;font-size:11px;color:#5A5040">Ошибка: ' + msg + '</div></div></div>';
-  return true;
-};
-</script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+
 :root{--gold:#C9A84C;--gold-light:#E8C97A;--gold-dim:rgba(201,168,76,0.12);--dark:#0E0D0B;--dark2:#161410;--dark3:#1E1B16;--dark4:#252118;--surface:#2A2620;--surface2:#322D25;--text:#E8E0D0;--text-dim:#A09070;--text-faint:#5A5040;--red:#C84A3A;--green:#5A9A6A;--blue:#4A7AB5;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;}
@@ -257,9 +252,11 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min
   .blocks-grid{grid-template-columns:1fr;}
   .tr-actions{margin-left:0;width:100%;}
 }
+
 </style>
 </head>
 <body>
+
 
 <div id="screenLanding" class="screen active">
   <div class="landing-logo">ШАТЁР</div>
@@ -319,7 +316,9 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min
   </aside>
   <div class="main-area" id="mainArea"></div>
 </div>
+
 <script>
+
 const SUPA_URL='https://blidutosqvztbcaflqkd.supabase.co';
 const SUPA_KEY='sb_publishable_aKfv1DnvSEHkRGEc82nUXA_jXmi-OUy';
 const {createClient}=supabase;
@@ -337,38 +336,63 @@ const BLOCKS=[
   {id:6,title:'Аттестация',icon:'🏆',desc:'Уровни, формат сдачи, путь к Легенде.',mentor:0}
 ];
 
-const QUIZZES={
+
+const QUIZ_BANK={
   1:[
     {q:'Официант вышел в зал без зажигалки. Категория нарушения?',opts:['Категория А','Категория Б','Категория В','Не нарушение'],c:0,e:'Выход без инвентаря — нарушение категории А (300 ₽).'},
-    {q:'Незнакомый гость обратился к тебе, ты не его официант. Что делаешь?',opts:['Объяснить что не твой стол','«Одну минуту, позову вашего официанта»','Проигнорировать','Попросить подождать и уйти'],c:1,e:'Минимальная реакция — «Одну минуту, позову вашего официанта».'},
+    {q:'Незнакомый гость обратился к тебе, ты не его официант. Что делаешь?',opts:['Объяснить что не твой стол','«Одну минуту, позову вашего официанта»','Проигнорировать','Попросить подождать'],c:1,e:'Минимальная реакция — «Одну минуту, позову вашего официанта».'},
     {q:'Правило 5/3 метров. Что делаешь на 3 метрах?',opts:['Зрительный контакт','Улыбаемся','Приветствуем словом','Предлагаем меню'],c:2,e:'На 5 м — зрительный контакт и улыбка. На 3 м — приветствие словом.'},
-    {q:'Гость разлил напиток и порезался. Первый шаг?',opts:['Принести счёт','Огородить, вызвать клининг, не уходить','Убрать осколки самому','Позвать другого официанта'],c:1,e:'Огородить → клининг → не уходить до уборки.'},
     {q:'Штраф за разговор по телефону в зале?',opts:['300 ₽','500 ₽','1000 ₽','Увольнение'],c:2,e:'Разговор по телефону в зале — 1000 ₽ (категория Б).'},
-    {q:'Официант недоволен решением администратора. Правильное действие?',opts:['Обсудить с коллегами','Написать объяснительную','Письменное обращение управляющему','Соцсети'],c:2,e:'По субординации — письменное обращение лично управляющему.'}
+    {q:'Официант недоволен решением администратора. Правильное действие?',opts:['Обсудить с коллегами в зале','Объяснительная администратору','Письменное обращение управляющему','Соцсети'],c:2,e:'По субординации — письменное обращение лично управляющему.'},
+    {q:'Гость разлил напиток и порезался. Первый шаг?',opts:['Принести счёт','Огородить место, вызвать клининг, не уходить','Убрать осколки самому','Позвать другого официанта'],c:1,e:'Огородить → клининг → не уходить до уборки.'},
+    {q:'Можно ли выйти в зал с запахом сигарет?',opts:['Да если покурил на перерыве','Нет — нарушение стандарта','Да если освежил дыхание жвачкой','Зависит от ситуации'],c:1,e:'Выход в зал с запахом сигарет — нарушение стандарта. Руки помыть, дыхание освежить.'},
+    {q:'Штраф за нарушение субординации с коллегами?',opts:['200 ₽','300 ₽','500 ₽','1000 ₽'],c:2,e:'Нарушение субординации — 500 ₽ (категория А).'},
+    {q:'Какие украшения разрешены официанту?',opts:['Любые небольшие','Только обручальное кольцо и серьги','Браслеты и цепочки тоже можно','Украшения полностью запрещены'],c:1,e:'Разрешено только обручальное кольцо и серьги. Браслеты и цепочки — запрещены.'},
+    {q:'Официант стоит спиной к гостям. Штраф?',opts:['Без штрафа','200 ₽','300 ₽','500 ₽'],c:1,e:'Стоять спиной к гостям — 200 ₽ (категория А).'},
+    {q:'Что должно быть до пятиминутки уже готово?',opts:['Ничего — готовимся на пятиминутке','Форма бейдж часы внешний вид','Только форма','Только бейдж'],c:1,e:'Все должны быть полностью готовы до пятиминутки: форма, бейдж, часы, внешний вид.'},
+    {q:'Гость обращается к тебе как к другу, используя неформальный тон. Ты?',opts:['Отвечаешь в том же тоне','Сохраняешь уважительный профессиональный тон','Делаешь замечание гостю','Уходишь'],c:1,e:'Говоришь с гостями и коллегами уважительно — без исключений, независимо от их тона.'}
   ],
   2:[
     {q:'Утренняя смена. Когда быть переодетым и на зоне?',opts:['09:00','08:45','08:30','09:15'],c:1,e:'Начало смены 09:00, но на зоне — в 08:45.'},
-    {q:'Гость заказывает с мангала в 10:15. Мангал с 11:00. Что говоришь?',opts:['Принять заказ','«Нет, мангал не работает»','«Мангал с 11:00, пока могу предложить...»','Позвать администратора'],c:2,e:'Никогда просто «нет». Называй время и предлагай альтернативу.'},
+    {q:'Гость заказывает с мангала в 10:15. Мангал с 11:00. Что говоришь?',opts:['Принять заказ','«Нет мангал не работает»','«Мангал с 11:00 пока могу предложить...»','Позвать администратора'],c:2,e:'Никогда просто «нет». Называй время и предлагай альтернативу.'},
     {q:'Блюдо попало в стоп-лист, гость сидит. Что делаешь?',opts:['Ждёшь','Сообщаешь немедленно и предлагаешь замену','Говоришь если спросит','Игнорируешь'],c:1,e:'Сообщай немедленно и предлагай замену.'},
-    {q:'Пятиминутка 10:45, пришёл в 10:47. Нарушение?',opts:['Нет, 2 минуты','Да — опоздание на пятиминутку = опоздание на смену','Нет','Если заметит администратор'],c:1,e:'Опоздание на пятиминутку = опоздание на смену.'},
-    {q:'Официант идёт на обед, зона не прикрыта. Правильно?',opts:['Да','Нет — уходить только когда зона под присмотром','Да, сам отвечает','Если предупредил'],c:1,e:'Уходить — только когда зона под присмотром коллеги.'},
-    {q:'Уход без сдачи зоны. Штраф?',opts:['300 ₽','500 ₽','1000 ₽','Без штрафа'],c:2,e:'Уход без сдачи зоны — 1000 ₽.'}
+    {q:'Пятиминутка 10:45, пришёл в 10:47. Нарушение?',opts:['Нет 2 минуты','Да — опоздание на пятиминутку = опоздание на смену','Нет','Если заметит администратор'],c:1,e:'Опоздание на пятиминутку = опоздание на смену.'},
+    {q:'Официант идёт на обед, зона не прикрыта. Правильно?',opts:['Да','Нет — уходить только когда зона под присмотром','Да сам отвечает','Если предупредил'],c:1,e:'Уходить — только когда зона под присмотром коллеги.'},
+    {q:'Уход без сдачи зоны. Штраф?',opts:['300 ₽','500 ₽','1000 ₽','Без штрафа'],c:2,e:'Уход без сдачи зоны — 1000 ₽.'},
+    {q:'До скольки принимается последний заказ на мангале?',opts:['21:00','21:30','22:00','22:30'],c:2,e:'Последний заказ на мангале — до 22:00.'},
+    {q:'Когда закрывается бар?',opts:['21:00','21:30','22:00','22:30'],c:3,e:'Бар закрывается в 22:30.'},
+    {q:'Сколько времени максимально на перерыв?',opts:['10 минут','15 минут','20 минут','30 минут'],c:2,e:'Перерыв — не более 20 минут.'},
+    {q:'Что говоришь администратору при сдаче зоны?',opts:['«Я ухожу»','«Зона готова чек-лист закрыт»','«Всё чисто»','Ничего просто уходишь'],c:1,e:'Подойти лично и сказать: «Зона готова, чек-лист закрыт».'},
+    {q:'Завтраки подаются с 09:00 до?',opts:['11:00','12:00','13:00','14:00'],c:1,e:'Завтраки подаются с 09:00 до 12:00.'},
+    {q:'Незнание актуального стоп-листа — это?',opts:['Норма','Нарушение','Только если гость пожалуется','Зависит от ситуации'],c:1,e:'Незнание актуального стоп-листа — нарушение (штраф 500 ₽).'}
   ],
   3:[
     {q:'Когда подаётся хлебная корзина?',opts:['Сразу как сел','После напитков до заказа','Только после основного заказа','По просьбе гостя'],c:2,e:'Хлеб — только после основного заказа.'},
     {q:'Через сколько минут делается чек-бэк?',opts:['Сразу','2–3 минуты','5–7 минут','В конце'],c:1,e:'Чек-бэк через 2–3 минуты после подачи.'},
-    {q:'Очерёдность подачи блюд?',opts:['Кто первый заказал','Мужчины→женщины→дети','Дети→женщины→мужчины→хозяин','Все одновременно'],c:2,e:'Дети → женщины → мужчины → хозяин стола.'},
+    {q:'Очерёдность подачи блюд?',opts:['Кто первый заказал','Мужчины женщины дети','Дети женщины мужчины хозяин','Все одновременно'],c:2,e:'Дети → женщины → мужчины → хозяин стола.'},
     {q:'Что нельзя при уборке посуды?',opts:['Говорить «Освобожу стол»','Убирать пока гость ещё ест','Убирать после складывания приборов','Сначала лишнее затем крупное'],c:1,e:'Никогда не убирай у гостя который ещё ест.'},
     {q:'Как открывать бутылку воды?',opts:['На баре','В зале не за столом','За столом при госте','Неважно'],c:2,e:'Только за столом в присутствии гостя.'},
-    {q:'Как держать бокал при сервировке?',opts:['За край','За ножку','За основание','Не принципиально'],c:1,e:'Только за ножку — никогда за край.'}
+    {q:'Как держать бокал при сервировке?',opts:['За край','За ножку','За основание','Не принципиально'],c:1,e:'Только за ножку — никогда за край.'},
+    {q:'За сколько минут нужно пересервировать стол после ухода гостей?',opts:['5 минут','3 минуты','10 минут','Когда успеешь'],c:1,e:'Стол пересервировать в течение 3 минут.'},
+    {q:'Гость недоволен едой. Твои действия после чек-бэка?',opts:['Объяснить что повар так готовит','Спорить не спорить сразу к администратору','Предложить скидку','Игнорировать'],c:1,e:'Не спорить, сразу сообщить администратору.'},
+    {q:'Что такое правило «Эхо»?',opts:['Повторять за гостем его слова','Зачитать заказ вслух перед отправкой','Переспрашивать каждое блюдо','Записывать заказ дважды'],c:1,e:'Правило Эхо: зачитай заказ с экрана вслух гостю перед отправкой — исключает ошибки.'},
+    {q:'Нож при сервировке кладётся?',opts:['Слева лезвием наружу','Справа лезвием к тарелке','Сверху тарелки','Под тарелкой'],c:1,e:'Нож — справа от тарелки, лезвием к тарелке.'},
+    {q:'Тяжёлые предметы на подносе кладут?',opts:['По краям','В центр','Слева','Справа'],c:1,e:'Тяжёлое — в центр, лёгкое — по краям. Лучше два рейса чем авария.'},
+    {q:'Счёт приносится в папке за сколько минут?',opts:['5 минут','3 минуты','1 минуту','Когда попросят'],c:2,e:'Счёт — в папке в течение 1 минуты.'}
   ],
   4:[
     {q:'«З» в ВУЗУ — это?',opts:['Зарплата','Забота','Зрительный контакт','Знание меню'],c:1,e:'ВУЗУ: Внимание, Уважение, Забота, Улыбка.'},
-    {q:'Перечисляешь соки, хочешь продать гранатовый. Какой метод?',opts:['Штирлица','Кивок Салливана','Красочное описание','Апселл'],c:1,e:'Кивок Салливана — лёгкий кивок на нужную позицию при перечислении.'},
+    {q:'Перечисляешь соки хочешь продать гранатовый. Какой метод?',opts:['Штирлица','Кивок Салливана','Красочное описание','Апселл'],c:1,e:'Кивок Салливана — лёгкий кивок на нужную позицию при перечислении.'},
     {q:'Гость заказал стейк. Как предложить гарнир?',opts:['Принести меню','«Не хотите гарнир?»','«К стейку — картофель. Из соусов — сырный или грибной»','Ничего'],c:2,e:'Техника цепочки — предлагай конкретно.'},
     {q:'Гости с ребёнком 5 лет. Первый шаг?',opts:['Принести меню всем','Аперитив взрослым','Сначала ребёнок: меню стульчик','Спросить взрослых'],c:2,e:'С детьми — сначала занимайся детьми.'},
     {q:'Как правильно предложить десерт?',opts:['«Не желаете десерт?»','«Хотите десерт?»','«Медовик и чизкейк. Что принести?»','«Всё?»'],c:2,e:'Никогда «хотите ли» — называй конкретные позиции.'},
-    {q:'Рибай в стоп-листе. Что говоришь?',opts:['«Рибая нет»','«Закончился»','«Рибай закончился, есть Нью-Йорк — похожий по вкусу»','«Уточню»'],c:2,e:'Техника альтернативного предложения — никогда просто «нет».'}
+    {q:'Рибай в стоп-листе. Что говоришь?',opts:['«Рибая нет»','«Закончился»','«Рибай закончился есть Нью-Йорк — похожий по вкусу»','«Уточню»'],c:2,e:'Техника альтернативного предложения — никогда просто «нет».'},
+    {q:'Что такое апселл?',opts:['Продажа сопутствующих товаров','Предложение более дорогой версии','Метод перечисления','Кивок на нужную позицию'],c:1,e:'Апселл — предложи улучшенную версию или дополнение к заказу.'},
+    {q:'Как правильно спросить хочет ли гость воду?',opts:['«Не желаете воды?»','«Воду принести?»','«Вам воду без газа или с газом?»','«Вода нужна?»'],c:2,e:'Предлагай выбор между конкретными вариантами — это техника альтернативного вопроса.'},
+    {q:'Гость нерешительный долго смотрит меню. Что делаешь?',opts:['Ждёшь пока решит','Задаёшь 1-2 вопроса и предлагаешь конкретно','Предлагаешь всё меню','Торопишь'],c:1,e:'Задай 1–2 вопроса (сытное/лёгкое, мясо/рыба) и предложи конкретную позицию.'},
+    {q:'Что такое метод Штирлица?',opts:['Кивок на нужную позицию','Выгодные позиции в начало и конец списка','Описание вкуса блюда','Предложение замены'],c:1,e:'Метод Штирлица: человек лучше запоминает первое и последнее — выгодные позиции в начало и конец.'},
+    {q:'«У» во втором месте в ВУЗУ — это?',opts:['Улыбка','Уважение','Убеждение','Упор'],c:1,e:'ВУЗУ: Внимание, Уважение, Забота, Улыбка. Второе У — Уважение.'},
+    {q:'Гость деловой с ноутбуком. Как работаешь?',opts:['Активно предлагаешь всё меню','Минимум слов максимум чёткости не мешаешь разговору','Игнорируешь','Торопишь с заказом'],c:1,e:'Деловой гость: минимум слов, максимум чёткости. Не мешай разговору.'}
   ],
   5:[
     {q:'Алгоритм ВПИО по порядку?',opts:['Внимание Поддержка Итог Общение','Выслушай Прими-извинения Исправь Отблагодари','Выслушай Пожалей Извинись Отпусти','Встреть Пойми Исправь Оцени'],c:1,e:'ВПИО: Выслушай → Прими извинения → Исправь → Отблагодари.'},
@@ -376,29 +400,44 @@ const QUIZZES={
     {q:'Гость съел 10% блюда — невкусно. Что делаешь?',opts:['Объясняешь рецепт','Предлагаешь скидку','Извиняешься и зовёшь администратора','Удаляешь из счёта'],c:2,e:'Официант не принимает финансовых решений. Извинись → администратор.'},
     {q:'Убрал блюдо с посторонним предметом. Что с ним делать?',opts:['Выбросить','Отдать повару','Сохранить для разбора','Принести новое и забыть'],c:2,e:'Сохрани для разбора — не выбрасывай.'},
     {q:'Пожар. Первые действия?',opts:['Тушить самому','Нажать сигнализацию и спокойно попросить покинуть зал','Звонить 101 и ждать','Позвать администратора'],c:1,e:'Кнопка сигнализации → спокойно попросить выйти. МЧС: 101.'},
-    {q:'Официант может дать скидку при жалобе?',opts:['Да до 10%','Да если расстроен','Нет — только администратор','Да если его вина'],c:2,e:'Любая компенсация — только решение администратора.'}
+    {q:'Официант может дать скидку при жалобе?',opts:['Да до 10%','Да если расстроен','Нет — только администратор','Да если его вина'],c:2,e:'Любая компенсация — только решение администратора.'},
+    {q:'Что означает «П» в алгоритме ВПИО?',opts:['Подтверди','Прими извинения','Пойми','Предложи'],c:1,e:'П — Прими извинения: «Прошу прощения, это недопустимо, я исправлю» — без объяснений.'},
+    {q:'Гость не может заплатить. Что делаешь?',opts:['Обвиняешь публично','Вызываешь полицию','Спокойно уточняешь и зовёшь администратора','Сам решаешь проблему'],c:2,e:'Спокойствие и уважительный тон. Немедленно — администратору.'},
+    {q:'Что запрещено говорить при конфликте?',opts:['«Я исправлю»','«У нас много заказов поэтому задержка»','«Сейчас позову администратора»','«Прошу прощения»'],c:1,e:'Оправдываться — «У нас много заказов» — категорически запрещено.'},
+    {q:'Гость потерял сознание. Первый шаг?',opts:['Нести воду','Администратор и скорая 112','Попросить других гостей помочь','Ждать пока очнётся'],c:1,e:'Немедленно — администратора и скорую 112. Освободить пространство, обеспечить воздух.'},
+    {q:'Кто принимает решение о компенсации гостю?',opts:['Официант','Повар','Администратор','Кассир'],c:2,e:'Любая компенсация — только решение администратора. Официант может только извиниться.'},
+    {q:'Что делаешь если видишь мокрый пол в зале?',opts:['Игнорируешь','Ставишь табличку или встаёшь рядом','Вытираешь сам','Зовёшь уборщицу и уходишь'],c:1,e:'Поставить табличку или встать рядом — не уходить пока пол не будет безопасен.'}
   ],
   6:[
     {q:'Новичок сдал блоки 1 и 2. Может перейти к блоку 4?',opts:['Да если знает материал','Нет — строго по порядку','Да с разрешения администратора','Да если прошёл 3 сам'],c:1,e:'Блоки — строго по порядку.'},
     {q:'После каких блоков официант становится Профи?',opts:['После 1–3','После 1–5','После сдачи меню','После 3 месяцев'],c:1,e:'Профи — автоматически после всех 5 блоков.'},
     {q:'Когда можно пересдать блок?',opts:['Сразу на следующий день','Через 3 рабочих дня','Через 7 дней','Через 2 недели'],c:1,e:'Пересдача — не раньше 3 рабочих дней.'},
-    {q:'88% по разделу Супы. Можно получить Легенду?',opts:['Да близко к 90%','Нет — минимум 90% по каждому','Да если остальные выше','Решает администратор'],c:1,e:'Минимум 90% по каждому разделу без исключений.'}
+    {q:'88% по разделу Супы. Можно получить Легенду?',opts:['Да близко к 90%','Нет — минимум 90% по каждому','Да если остальные выше','Решает администратор'],c:1,e:'Минимум 90% по каждому разделу без исключений.'},
+    {q:'Кто принимает аттестацию официанта?',opts:['Старший официант','Наставник','Администратор','Любой сотрудник'],c:2,e:'Кто принимает — только администратор. Коллеги-официанты не могут принимать аттестацию.'},
+    {q:'Сколько попыток разрешено для сдачи блока?',opts:['Одна','Три','Пять','Не ограничено'],c:3,e:'Количество попыток не ограничено. Каждая фиксируется в листе.'}
   ]
 };
 
-// ── AUTH ──
-function goToLanding(){showScreen('screenLanding');}
-function goToAuth(role){
-  currentRole=role; authMode='register';
-  updateAuthUI(); showScreen('screenAuth');
+
+function getRandomQuiz(blockId){
+  const bank=QUIZ_BANK[blockId]||[];
+  const shuffled=[...bank].sort(()=>Math.random()-0.5);
+  return shuffled.slice(0,Math.min(6,shuffled.length));
 }
+
+const QUIZZES={1:getRandomQuiz(1),2:getRandomQuiz(2),3:getRandomQuiz(3),4:getRandomQuiz(4),5:getRandomQuiz(5),6:getRandomQuiz(6)};
+
+// AUTH
+function goToLanding(){showScreen('screenLanding');}
+function goToAuth(role){currentRole=role;authMode='register';updateAuthUI();showScreen('screenAuth');}
 function toggleAuthMode(){authMode=authMode==='register'?'login':'register';updateAuthUI();}
+
 function updateAuthUI(){
   const badges={trainee:'🔰 Стажёр',mentor:'👨‍🏫 Наставник',admin:'👑 Администратор'};
   document.getElementById('authRoleBadge').textContent=badges[currentRole];
   document.getElementById('authTitle').textContent=authMode==='register'?'Регистрация':'Вход';
   const info=document.getElementById('authInfoBox');
-  if(currentRole==='trainee'&&authMode==='register'){info.textContent='После регистрации тебе назначат наставника — обучение начнётся после этого.';info.style.display='block';}
+  if(currentRole==='trainee'&&authMode==='register'){info.textContent='После регистрации можешь сразу начать обучение или дождаться наставника.';info.style.display='block';}
   else if(currentRole==='mentor'&&authMode==='register'){info.textContent='Наставник может вести до 2 стажёров одновременно.';info.style.display='block';}
   else{info.style.display='none';}
   const isAdmin=currentRole==='admin';
@@ -406,8 +445,7 @@ function updateAuthUI(){
     document.getElementById('authFormRegister').classList.add('hidden');
     document.getElementById('authFormLogin').classList.remove('hidden');
     document.getElementById('authSub').textContent=isAdmin?'Вход для администратора':'Вход в аккаунт';
-    if(isAdmin)document.getElementById('loginToggle').style.display='none';
-    else document.getElementById('loginToggle').style.display='block';
+    document.getElementById('loginToggle').style.display=isAdmin?'none':'block';
   }else{
     document.getElementById('authFormRegister').classList.remove('hidden');
     document.getElementById('authFormLogin').classList.add('hidden');
@@ -415,6 +453,7 @@ function updateAuthUI(){
   }
   document.getElementById('authError').classList.remove('show');
 }
+
 function showAuthError(msg){const el=document.getElementById('authError');el.textContent=msg;el.classList.add('show');}
 
 async function doRegister(){
@@ -427,7 +466,8 @@ async function doRegister(){
   btn.disabled=true;btn.textContent='Создаю...';
   const{data,error}=await db.auth.signUp({email,password:pass});
   if(error){showAuthError(error.message);btn.disabled=false;btn.textContent='Создать аккаунт';return;}
-  await db.from('users').insert({id:data.user.id,name,role:currentRole,block_current:1,block_passed:[],status:'active'});
+  const{error:pe}=await db.from('users').insert({id:data.user.id,name,role:currentRole,block_current:1,block_passed:[],status:'active'});
+  if(pe){showAuthError('Ошибка профиля: '+pe.message);btn.disabled=false;btn.textContent='Создать аккаунт';return;}
   await loadProfileAndEnter(data.user);
 }
 
@@ -439,6 +479,7 @@ async function doLogin(){
   btn.disabled=true;btn.textContent='Вхожу...';
   if(currentRole==='admin'&&email===ADMIN_EMAIL&&pass===ADMIN_PASS){
     currentProfile={id:'admin',name:'Администратор',role:'admin'};
+    sessionStorage.setItem('adminSession','1');
     enterApp();return;
   }
   const{data,error}=await db.auth.signInWithPassword({email,password:pass});
@@ -454,11 +495,12 @@ async function loadProfileAndEnter(user){
 }
 
 async function doLogout(){
+  sessionStorage.removeItem('adminSession');
   await db.auth.signOut();
   currentUser=null;currentProfile=null;goToLanding();
 }
 
-// ── APP ──
+// APP
 function enterApp(){
   showScreen('screenApp');renderSidebar();
   const r=currentProfile.role;
@@ -466,8 +508,9 @@ function enterApp(){
   else if(r==='mentor')renderMentorDashboard();
   else renderAdminDashboard();
 }
+
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function setMainHTML(html){document.getElementById('mainArea').innerHTML=`<div class="page active fade-in">${html}</div>`;}
+function setMainHTML(html){document.getElementById('mainArea').innerHTML='<div class="page active fade-in">'+html+'</div>';}
 
 function renderSidebar(){
   const p=currentProfile;
@@ -479,7 +522,7 @@ function renderSidebar(){
   if(p.role==='trainee')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'blocks',icon:'📚',label:'Блоки обучения'},{id:'progress',icon:'📊',label:'Мой прогресс'}];
   else if(p.role==='mentor')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'trainees',icon:'👥',label:'Мои стажёры'},{id:'blocks',icon:'📚',label:'Материалы'}];
   else items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'all-trainees',icon:'👥',label:'Все стажёры'},{id:'all-mentors',icon:'👨‍🏫',label:'Наставники'},{id:'confirm',icon:'✅',label:'Подтверждения'}];
-  nav.innerHTML=items.map(i=>`<div class="nav-item" data-page="${i.id}" onclick="showPage('${i.id}')"><div class="nav-icon">${i.icon}</div><div class="nav-text">${i.label}</div></div>`).join('');
+  nav.innerHTML=items.map(i=>'<div class="nav-item" data-page="'+i.id+'" onclick="showPage(\''+i.id+'\')"><div class="nav-icon">'+i.icon+'</div><div class="nav-text">'+i.label+'</div></div>').join('');
 }
 
 function showPage(id){
@@ -495,113 +538,102 @@ function showPage(id){
   else if(id==='confirm')renderAdminConfirm();
 }
 
-// ── TRAINEE ──
+// TRAINEE DASHBOARD
 async function renderTraineeDashboard(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
   const p=currentProfile;
   let mentorName=null;
   if(p.mentor_id){const{data}=await db.from('users').select('name').eq('id',p.mentor_id).single();if(data)mentorName=data.name;}
   const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',p.id);
-  const passed=(bpData||[]).filter(b=>b.passed&&b.confirmed_by).length;
+  const bp=bpData||[];
+  const passed=bp.filter(b=>b.passed&&b.confirmed_by).length;
   const pct=Math.round((passed/5)*100);
   const level=passed===0?'Стажёр':passed<5?'Новичок':'Профи';
-  if(!mentorName){
-    setMainHTML(`
-      <div class="welcome-banner"><div class="wb-greeting">Добро пожаловать, <span>${p.name.split(' ')[0]}</span></div><div class="wb-sub">Аккаунт создан. Ожидай назначения наставника.</div></div>
-      <div class="wait-screen">
-        <div class="wait-icon">⏳</div>
-        <div class="wait-title">Ожидание наставника</div>
-        <div class="wait-sub">Администратор назначит тебе наставника. После этого обучение начнётся.</div>
-        <div class="wait-info">
-          <div class="wi-row"><span class="wi-label">Имя</span><span class="wi-val">${p.name}</span></div>
-          <div class="wi-row"><span class="wi-label">Статус</span><span class="wi-val">Ожидание наставника</span></div>
-          <div class="wi-row"><span class="wi-label">Уровень</span><span class="wi-val">Стажёр</span></div>
-        </div>
-        <br><button class="btn-small" onclick="renderTraineeDashboard()">🔄 Обновить</button>
-      </div>
-    `);return;
-  }
-  setMainHTML(`
-    <div class="welcome-banner">
-      <div class="wb-greeting">Добро пожаловать, <span>${p.name.split(' ')[0]}</span></div>
-      <div class="wb-sub">Продолжай обучение — ты на пути к статусу Профи.</div>
-      <div class="wb-mentor"><div style="font-size:20px">👨‍🏫</div><div><div class="wb-mentor-label">Твой наставник</div><div class="wb-mentor-name">${mentorName}</div></div></div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num">${passed}</div><div class="stat-label">Блоков сдано</div></div>
-      <div class="stat-card"><div class="stat-num">${5-passed}</div><div class="stat-label">Осталось</div></div>
-      <div class="stat-card"><div class="stat-num">${pct}%</div><div class="stat-label">Готовность</div></div>
-    </div>
-    <div class="card"><div class="card-title">📊 Прогресс · ${level}</div>
-      <div class="prog-wrap"><div class="prog-label"><span>${passed} из 5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div>
-    </div>
-    <div class="card-section" style="padding:0 0 8px">Блоки обучения</div>
-    <div class="blocks-grid" id="blocksGrid"></div>
-  `);
-  renderBlocksGrid(bpData||[]);
+  const selfStudy=!p.mentor_id;
+
+  setMainHTML(
+    '<div class="welcome-banner">'+
+    '<div class="wb-greeting">Добро пожаловать, <span>'+p.name.split(' ')[0]+'</span></div>'+
+    '<div class="wb-sub">'+(selfStudy?'Самостоятельное обучение — проходи блоки в своём темпе.':'Продолжай обучение — ты на пути к статусу Профи.')+'</div>'+
+    (mentorName?'<div class="wb-mentor"><div style="font-size:20px">👨‍🏫</div><div><div class="wb-mentor-label">Твой наставник</div><div class="wb-mentor-name">'+mentorName+'</div></div></div>':
+    selfStudy?'<div style="margin-top:12px;font-size:12px;color:var(--text-faint)">Наставник не назначен · самостоятельный режим</div>':
+    '<div style="margin-top:12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--gold)">⏳ Ожидание назначения наставника</div>')+
+    '</div>'+
+    '<div class="stats-row">'+
+    '<div class="stat-card"><div class="stat-num">'+passed+'</div><div class="stat-label">Блоков сдано</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+(5-passed)+'</div><div class="stat-label">Осталось</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+pct+'%</div><div class="stat-label">Готовность</div></div>'+
+    '</div>'+
+    '<div class="card"><div class="card-title">📊 Прогресс · '+level+'</div>'+
+    '<div class="prog-wrap"><div class="prog-label"><span>'+passed+' из 5</span><span>'+pct+'%</span></div>'+
+    '<div class="prog-bg"><div class="prog-fill" style="width:'+pct+'%"></div></div></div></div>'+
+    '<div class="card-section" style="padding:0 0 8px">Блоки обучения</div>'+
+    '<div class="blocks-grid" id="blocksGrid"></div>'
+  );
+  renderBlocksGrid(bp,false,selfStudy);
 }
 
 async function renderBlocksList(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
   const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',currentProfile.id);
   const isMentor=currentProfile.role==='mentor';
-  setMainHTML(`<div class="page-title">📚 ${isMentor?'Материалы':'Блоки обучения'}</div><div class="blocks-grid" id="blocksGrid"></div>`);
-  renderBlocksGrid(bpData||[],isMentor);
+  const selfStudy=!currentProfile.mentor_id&&currentProfile.role==='trainee';
+  setMainHTML('<div class="page-title">📚 '+(isMentor?'Материалы':'Блоки обучения')+'</div><div class="blocks-grid" id="blocksGrid"></div>');
+  renderBlocksGrid(bpData||[],isMentor,selfStudy);
 }
 
-function renderBlocksGrid(bpData,allUnlocked=false){
+function renderBlocksGrid(bpData,allUnlocked=false,selfStudy=false){
   const grid=document.getElementById('blocksGrid');if(!grid)return;
   grid.innerHTML=BLOCKS.map(b=>{
     const bp=bpData.find(x=>x.block_id===b.id);
     const done=bp?.passed&&bp?.confirmed_by;
     const pending=bp?.passed&&!bp?.confirmed_by;
-    const prev=b.id===1||bpData.find(x=>x.block_id===b.id-1&&x.passed&&x.confirmed_by);
-    const unlocked=allUnlocked||(prev&&!done)||done;
+    const prevDone=b.id===1||bpData.find(x=>x.block_id===b.id-1&&x.passed&&(x.confirmed_by||selfStudy));
+    const unlocked=allUnlocked||selfStudy||(prevDone&&!done)||done;
     let sc='locked',st='🔒 Заблокирован';
     if(done){sc='done';st='✓ Сдан';}
     else if(pending){sc='pending';st='⏳ Ожидает подтверждения';}
     else if(unlocked){sc='open';st='→ Открыт';}
-    return`<div class="block-card ${done?'done':unlocked?'unlocked':'locked'}" onclick="${unlocked||done?'openBlock('+b.id+')':''}">
-      <div class="bc-num">${b.id}</div><div class="bc-icon">${b.icon}</div>
-      <div class="bc-title">Блок ${b.id}: ${b.title}</div>
-      <div class="bc-desc">${b.desc}</div>
-      <span class="bc-status ${sc}">${st}</span>
-    </div>`;
+    return '<div class="block-card '+(done?'done':unlocked?'unlocked':'locked')+'" onclick="'+(unlocked||done?'openBlock('+b.id+')':'')+'">'+
+      '<div class="bc-num">'+b.id+'</div><div class="bc-icon">'+b.icon+'</div>'+
+      '<div class="bc-title">Блок '+b.id+': '+b.title+'</div>'+
+      '<div class="bc-desc">'+b.desc+'</div>'+
+      '<span class="bc-status '+sc+'">'+st+'</span></div>';
   }).join('');
 }
 
-// ── BLOCK VIEW ──
+// BLOCK VIEW
 let activeBlockId=null,quizState=null;
 
 function openBlock(id){activeBlockId=id;renderBlockView(id);}
+
 function renderBlockView(id){
   const b=BLOCKS.find(x=>x.id===id);
   const hasCheck=id===2;
   const isMentor=currentProfile.role==='mentor';
-  const backFn = isMentor ? 'renderBlocksList()' : 'renderTraineeDashboard()';
-  document.getElementById('mainArea').innerHTML=`
-    <div class="block-header-bar">
-      <div class="bh-back" onclick="${backFn}">← Назад</div>
-      <div class="bh-title">${b.icon} ${b.title}</div>
-      <div class="bh-tabs">
-        <button class="tab-btn active" id="tab-material" onclick="switchBlockTab('material',${id})">📖 Материал</button>
-        <button class="tab-btn" id="tab-quiz" onclick="switchBlockTab('quiz',${id})">🧠 Тест</button>
-        ${hasCheck?'<button class="tab-btn" id="tab-check" onclick="switchBlockTab(\'check\','+id+')">✅ Чек-листы</button>':''}
-      </div>
-    </div>
-    <div class="block-body" id="blockBody"></div>
-  `;
+  const backFn=isMentor?'renderBlocksList()':'renderTraineeDashboard()';
+  document.getElementById('mainArea').innerHTML=
+    '<div class="block-header-bar">'+
+    '<div class="bh-back" onclick="'+backFn+'">← Назад</div>'+
+    '<div class="bh-title">'+b.icon+' '+b.title+'</div>'+
+    '<div class="bh-tabs">'+
+    '<button class="tab-btn active" id="tab-material" onclick="switchBlockTab(&quot;material&quot;,'+id+')">📖 Материал</button>'+
+    '<button class="tab-btn" id="tab-quiz" onclick="switchBlockTab(&quot;quiz&quot;,'+id+')">🧠 Тест</button>'+
+    (hasCheck?'<button class="tab-btn" id="tab-check" onclick="switchBlockTab(&quot;check&quot;,'+id+')">✅ Чек-листы</button>':'')+
+    '</div></div>'+
+    '<div class="block-body" id="blockBody"></div>';
   renderMaterial(id);
 }
+
 function switchBlockTab(tab,id){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+tab)?.classList.add('active');
+  const el=document.getElementById('tab-'+tab);if(el)el.classList.add('active');
   if(tab==='material')renderMaterial(id);
   else if(tab==='quiz')startQuiz(id);
   else renderChecklist(id);
 }
 
-// ── MATERIAL ──
+
 const MATERIAL={
 1:`<div class="content-section"><div class="section-title">Кто такой официант в Шатёре</div><p style="color:var(--text-dim);font-size:14px;line-height:1.8;margin-bottom:14px">Официант — это первое и последнее впечатление которое гость уносит. Не кухня, не интерьер — именно ты.</p><div class="callout">Этот документ — стандарт профессионала.</div></div>
 <div class="content-section"><div class="section-title">1. Внешний вид</div><table class="content-table"><tr><th>Элемент</th><th>Требование</th></tr><tr><td>Рубашка</td><td>Чёрная, чистая, отутюженная</td></tr><tr><td>Брюки</td><td>Чёрные, классика, отутюженные</td></tr><tr><td>Обувь</td><td>Чёрная, закрытая, чистая</td></tr><tr><td>Бейдж</td><td>Слева горизонтально на уровне сердца</td></tr></table>
@@ -630,10 +662,19 @@ const MATERIAL={
 <div class="content-section"><div class="section-title">Путь к Легенде — меню</div><div class="callout">Минимум 90% по каждому разделу. Один ниже 90% — статус не присваивается.</div><table class="content-table"><tr><th>Раздел</th><th>Минимум</th></tr><tr><td>Закуски и салаты</td><td>90%</td></tr><tr><td>Супы</td><td>90%</td></tr><tr><td>Горячие блюда</td><td>90%</td></tr><tr><td>Мангал и стейки</td><td>90%</td></tr><tr><td>Гарниры и соусы</td><td>90%</td></tr><tr><td>Десерты</td><td>90%</td></tr><tr><td>Напитки</td><td>90%</td></tr><tr><td>Завтраки</td><td>90%</td></tr></table></div>`
 };
 
+
+function renderMaterial(id){document.getElementById('blockBody').innerHTML='<div class="fade-in">'+(MATERIAL[id]||'<p class="text-dim">Загрузка...</p>')+'</div>';}
+
+
 function renderMaterial(id){document.getElementById('blockBody').innerHTML=`<div class="fade-in">${MATERIAL[id]||'<p class="text-dim">Материал загружается...</p>'}</div>`;}
 
 // ── QUIZ ──
-function startQuiz(id){quizState={id,current:0,answers:[],selected:null,done:false};renderQuizQ();}
+function startQuiz(id){
+  QUIZZES[id]=getRandomQuiz(id);
+  quizState={id,current:0,answers:[],selected:null,done:false};
+  if(currentProfile.role==='trainee')trackAttempt(id);
+  renderQuizQ();
+}
 
 function goBack(){
   if(currentProfile.role==='mentor')renderBlocksList();
@@ -662,9 +703,18 @@ function selectOpt(i){
 function nextQ(){quizState.current++;quizState.selected=null;if(quizState.current>=(QUIZZES[quizState.id]?.length||0))quizState.done=true;renderQuizQ();}
 async function saveBlockResult(blockId,score){
   const uid=currentProfile.id;
-  const{data:ex}=await db.from('block_progress').select('id').eq('user_id',uid).eq('block_id',blockId).single();
-  if(ex){await db.from('block_progress').update({passed:true,score}).eq('id',ex.id);}
-  else{await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:true,score});}
+  const{data:ex}=await db.from('block_progress').select('id,attempts').eq('user_id',uid).eq('block_id',blockId).single();
+  const attempts=(ex?.attempts||0)+1;
+  if(ex){await db.from('block_progress').update({passed:true,score,attempts}).eq('id',ex.id);}
+  else{await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:true,score,attempts:1});}
+}
+
+async function trackAttempt(blockId){
+  const uid=currentProfile.id;
+  const{data:ex}=await db.from('block_progress').select('id,attempts').eq('user_id',uid).eq('block_id',blockId).single();
+  const attempts=(ex?.attempts||0)+1;
+  if(ex){await db.from('block_progress').update({attempts}).eq('id',ex.id);}
+  else{await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:false,score:0,attempts:1});}
 }
 
 // ── CHECKLIST ──
@@ -692,7 +742,7 @@ async function renderTraineeProgress(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
   const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',currentProfile.id);
   const passed=(bpData||[]).filter(b=>b.passed&&b.confirmed_by).length,pct=Math.round((passed/5)*100);
-  setMainHTML(`<div class="page-title">📊 Мой прогресс</div><div class="card"><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passed} из 5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div></div><table class="content-table" style="margin-top:16px"><tr><th>Блок</th><th>Тест</th><th>Подтверждение</th></tr>${BLOCKS.slice(0,5).map(b=>{const bp=(bpData||[]).find(x=>x.block_id===b.id);return`<tr><td>${b.icon} ${b.title}</td><td>${bp?.passed?`✓ ${bp.score}%`:'—'}</td><td>${bp?.confirmed_by?'✓ Подтверждён':'⏳ Ожидает'}</td></tr>`;}).join('')}</table>`);
+  setMainHTML(`<div class="page-title">📊 Мой прогресс</div><div class="card"><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passed} из 5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div></div><table class="content-table" style="margin-top:16px"><tr><th>Блок</th><th>Результат</th><th>Попыток</th><th>Подтверждение</th></tr>${BLOCKS.slice(0,5).map(b=>{const bp=(bpData||[]).find(x=>x.block_id===b.id);return`<tr><td>${b.icon} ${b.title}</td><td>${bp?.passed?`✓ ${bp.score}%`:'—'}</td><td>${bp?.attempts||0}</td><td>${bp?.confirmed_by?'✓ Подтверждён':bp?.passed?'⏳ Ожидает':'—'}</td></tr>`;}).join('')}</table>`);
 }
 
 // ── MENTOR ──
@@ -771,7 +821,7 @@ async function renderAdminConfirm(){
   const{data:allMentors}=await db.from('users').select('*').eq('role','mentor');
   setMainHTML(`<div class="page-title">✅ Подтверждения</div>
     <div class="card-section" style="padding:0 0 8px">Тесты ожидающие подтверждения (${pending?.length||0})</div>
-    ${pending?.length?pending.map(bp=>`<div class="trainee-row"><div class="tr-avatar">${(bp.users?.name||'?')[0]?.toUpperCase()}</div><div><div class="tr-name">${bp.users?.name||'—'}</div><div class="tr-meta">Блок ${bp.block_id} · ${bp.score}%</div></div><div class="tr-actions"><button class="btn-small" onclick="confirmBlock('${bp.id}')">✓ Подтвердить</button><button class="btn-danger" onclick="rejectBlock('${bp.id}')">✗ Отклонить</button></div></div>`).join(''):'<div class="callout callout-green">Нет ожидающих подтверждений.</div>'}
+    ${pending?.length?pending.map(bp=>`<div class="trainee-row"><div class="tr-avatar">${(bp.users?.name||'?')[0]?.toUpperCase()}</div><div><div class="tr-name">${bp.users?.name||'—'}</div><div class="tr-meta">Блок ${bp.block_id} · ${bp.score}% · Попыток: ${bp.attempts||1}</div></div><div class="tr-actions"><button class="btn-small" onclick="confirmBlock('${bp.id}')">✓ Подтвердить</button><button class="btn-danger" onclick="rejectBlock('${bp.id}')">✗ Отклонить</button></div></div>`).join(''):'<div class="callout callout-green">Нет ожидающих подтверждений.</div>'}
     <div class="divider"></div>
     <div class="card-section" style="padding:0 0 8px">Листы передачи (${handovers?.length||0})</div>
     ${handovers?.length?handovers.map(h=>`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(h.trainee?.name||'?')[0]?.toUpperCase()}</div><div style="flex:1"><div class="tc-name">${h.trainee?.name||'—'}</div><div class="tc-meta">От наставника: ${h.from_mentor?.name||'—'}</div></div></div><div style="background:var(--dark2);border-radius:8px;padding:12px;font-size:13px;color:var(--text-dim);margin-bottom:12px">${h.notes||'—'}</div><div class="flex-row"><select class="form-select" id="m2sel-${h.id}" style="width:200px;padding:6px 10px"><option value="">Выбрать наставника 2</option>${(allMentors||[]).map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><button class="btn-small" onclick="confirmHandover('${h.id}','${h.trainee?.id||''}','${h.from_mentor?.id||''}')">Назначить наставника 2</button></div></div>`).join(''):'<div class="callout callout-green">Нет листов передачи.</div>'}`);
@@ -795,11 +845,21 @@ document.getElementById('mobileToggle').onclick=()=>{document.getElementById('si
 document.getElementById('sidebarOverlay').onclick=closeMobileSidebar;
 function closeMobileSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
 
-// ── AUTO LOGIN ──
+// MOBILE
+document.getElementById('mobileToggle').onclick=()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+};
+document.getElementById('sidebarOverlay').onclick=closeMobileSidebar;
+
+// AUTO LOGIN
 (async()=>{
-  // Check if supabase loaded
-  if(typeof supabase === 'undefined') {
-    document.body.innerHTML = '<div style="background:#0E0D0B;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif"><div style="background:#1E1B16;border:1px solid #C9A84C;border-radius:16px;padding:40px;max-width:480px;text-align:center"><div style="font-size:40px;margin-bottom:16px">⚠️</div><div style="color:#C9A84C;font-family:Cormorant Garamond,serif;font-size:24px;margin-bottom:12px">Нужен веб-сервер</div><div style="color:#A09070;font-size:13px;line-height:1.8;margin-bottom:20px">Файл открыт напрямую (file://). Приложение работает только через HTTP.</div><div style="background:#252118;border-radius:8px;padding:16px;font-size:13px;color:#A09070;text-align:left"><div style="color:#C9A84C;margin-bottom:10px;font-weight:600">Как запустить локально:</div><div style="margin-bottom:6px">1. Установи VS Code + расширение Live Server</div><div style="margin-bottom:6px">2. Или: python -m http.server 8080</div><div style="margin-bottom:6px">3. Затем открой http://localhost:8080</div><div style="margin-top:10px;color:#C9A84C">Или загрузи файл на хостинг — тогда работает сразу.</div></div></div></div>';
+  if(sessionStorage.getItem('adminSession')==='1'){
+    currentProfile={id:'admin',name:'Администратор',role:'admin'};
+    enterApp();return;
+  }
+  if(typeof supabase==='undefined'){
+    document.body.innerHTML='<div style="background:#0E0D0B;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif"><div style="background:#1E1B16;border:1px solid #C9A84C;border-radius:16px;padding:40px;max-width:480px;text-align:center"><div style="font-size:40px;margin-bottom:16px">⚠️</div><div style="color:#C9A84C;font-size:24px;margin-bottom:12px">Нужен веб-сервер</div><div style="color:#A09070;font-size:13px;line-height:1.8;margin-bottom:20px">Файл открыт напрямую (file://). Приложение работает только через HTTP.</div><div style="background:#252118;border-radius:8px;padding:16px;font-size:13px;color:#A09070;text-align:left"><div style="color:#C9A84C;margin-bottom:10px">Открой по ссылке:</div><div>https://muntassssir-cmyk.github.io/shater-training</div></div></div></div>';
     return;
   }
   const{data:{session}}=await db.auth.getSession();
@@ -809,6 +869,7 @@ function closeMobileSidebar(){document.getElementById('sidebar').classList.remov
     if(data){currentProfile=data;enterApp();}
   }
 })();
+
 </script>
 </body>
 </html>
