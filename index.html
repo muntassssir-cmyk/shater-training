@@ -2356,9 +2356,7 @@ async function renderStazherReg(){
   const doneBtn="<div class='callout callout-green' style='margin-top:24px'>✓ Ты уже ознакомился с регламентом</div>";
   const readBtn="<div style='text-align:center;margin-top:28px'><button class='btn-quiz' onclick='markStazherRegRead()' style='padding:14px 32px;font-size:15px'>✓ Ознакомился с регламентом</button></div>";
   const btnHTML=regRead?doneBtn:readBtn;
-  const main=document.getElementById("mainContent");
-  if(!main)return;
-  main.innerHTML="<div class='page-title'>📋 Регламент стажёра</div>"+btnHTML+"<div id='stazherRegContent' style='margin-top:20px'></div>"+btnHTML;
+  setMainHTML("<div class='page-title'>📋 Регламент стажёра</div>"+btnHTML+"<div id='stazherRegContent' style='margin-top:20px'></div>"+btnHTML);
   document.getElementById("stazherRegContent").innerHTML=MATERIAL_STAZHER;
 }
 function markStazherRegRead(){
