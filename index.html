@@ -2295,7 +2295,7 @@ function renderSidebar(){
   document.getElementById('sbRoleBadge').textContent={trainee:'Стажёр',mentor:'Наставник',admin:'Администратор'}[p.role]||p.role;
   const nav=document.getElementById('sidebarNav');
   let items=[];
-  if(p.role==='trainee')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'blocks',icon:'📚',label:'Блоки обучения'},{id:'progress',icon:'📊',label:'Мой прогресс'}];
+  if(p.role==='trainee')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'stazher-reg',icon:'📋',label:'Регламент стажёра'},{id:'blocks',icon:'📚',label:'Блоки обучения'},{id:'progress',icon:'📊',label:'Мой прогресс'}];
   else if(p.role==='mentor')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'trainees',icon:'👥',label:'Мои стажёры'},{id:'mentor-confirm',icon:'✅',label:'Подтверждения'},{id:'blocks',icon:'📚',label:'Материалы'}];
   else items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'all-trainees',icon:'👥',label:'Все стажёры'},{id:'all-mentors',icon:'👨‍🏫',label:'Наставники'},{id:'confirm',icon:'✅',label:'Подтверждения'}];
   nav.innerHTML=items.map(i=>'<div class="nav-item" data-page="'+i.id+'" onclick="showPage(\''+i.id+'\')"><div class="nav-icon">'+i.icon+'</div><div class="nav-text">'+i.label+'</div></div>').join('');
@@ -2306,6 +2306,7 @@ function showPage(id){
   closeMobileSidebar();
   const r=currentProfile.role;
   if(id==='dashboard'){if(r==='trainee')renderTraineeDashboard();else if(r==='mentor')renderMentorDashboard();else renderAdminDashboard();}
+  else if(id==='stazher-reg')renderStazherReg();
   else if(id==='blocks')renderBlocksList();
   else if(id==='progress')renderTraineeProgress();
   else if(id==='trainees')renderMentorTrainees();
@@ -2350,12 +2351,26 @@ async function renderTraineeDashboard(){
   renderBlocksGrid(bp,false,selfStudy);
 }
 
+async function renderStazherReg(){
+  const regRead=localStorage.getItem('stazher_reg_read_'+currentProfile.id);
+  const btnHTML=regRead
+    ?'<div class="callout callout-green" style="margin-top:24px">✓ Ты уже ознакомился с регламентом</div>'
+    :'<div style="text-align:center;margin-top:28px"><button class="btn-quiz" onclick="markStazherRegRead()" style="padding:14px 32px;font-size:15px">✓ Ознакомился с регламентом</button></div>';
+  setMainHTML('<div class="page-title">📋 Регламент стажёра</div>'+btnHTML+'<div style="margin-top:20px">'+MATERIAL_STAZHER+'</div>'+btnHTML);
+}
+function markStazherRegRead(){
+  localStorage.setItem('stazher_reg_read_'+currentProfile.id,'1');
+  // обновляем страницу чтобы показать галочку
+  renderStazherReg();
+}
 async function renderBlocksList(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
   const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',currentProfile.id);
   const isMentor=currentProfile.role==='mentor';
   const selfStudy=!currentProfile.mentor_id&&currentProfile.role==='trainee';
-  setMainHTML('<div class="page-title">📚 '+(isMentor?'Материалы':'Блоки обучения')+'</div><div class="blocks-grid" id="blocksGrid"></div>');
+  const regRead=localStorage.getItem('stazher_reg_read_'+currentProfile.id);
+  const banner=(!isMentor&&!regRead)?'<div class="callout" style="background:#3d1515;border-color:#c0392b;color:#f5a5a5;cursor:pointer;margin-bottom:16px" onclick="showPage('stazher-reg')">⚠️ Перед началом обучения ознакомься с <u>Регламентом стажёра</u> — нажми здесь</div>':'';
+  setMainHTML(banner+'<div class="page-title">📚 '+(isMentor?'Материалы':'Блоки обучения')+'</div><div class="blocks-grid" id="blocksGrid"></div>');
   renderBlocksGrid(bpData||[],isMentor,selfStudy);
 }
 
