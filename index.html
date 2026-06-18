@@ -6524,29 +6524,20 @@ function nextQ(){quizState.current++;quizState.selected=null;if(quizState.curren
 async function saveBlockResult(blockId,score){
   const uid=currentProfile.id;
   const isSelf=currentTraineeMode==='self';
-  const{data:ex}=await db.from('block_progress').select('id,attempts').eq('user_id',uid).eq('block_id',blockId).single();
-  const attempts=(ex?.attempts||0)+1;
-  // в самостоятельном режиме сразу помечаем confirmed (confirmed_by = uid)
   const confirmed_by=isSelf?uid:null;
-  if(ex){await db.from('block_progress').update({passed:true,score,attempts,confirmed_by}).eq('id',ex.id);}
-  else{await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:true,score,attempts:1,confirmed_by});}
-  // если режим "с наставником" — создаём уведомление наставнику
-  if(!isSelf){
-    const mentorId=currentProfile.mentor_id;
-    if(mentorId){
-      await db.from('mentor_notifications').insert({
-        trainee_id:uid,
-        mentor_id:mentorId,
-        block_id:blockId,
-        status:'pending'
-      }).catch(()=>{});
-    }
+  // используем maybeSingle() — не бросает ошибку если записи нет
+  const{data:ex}=await db.from('block_progress').select('id,attempts').eq('user_id',uid).eq('block_id',blockId).maybeSingle();
+  const attempts=(ex?.attempts||0)+1;
+  if(ex){
+    await db.from('block_progress').update({passed:true,score,attempts,confirmed_by}).eq('id',ex.id);
+  } else {
+    await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:true,score,attempts:1,confirmed_by});
   }
 }
 
 async function trackAttempt(blockId){
   const uid=currentProfile.id;
-  const{data:ex}=await db.from('block_progress').select('id,attempts').eq('user_id',uid).eq('block_id',blockId).single();
+  const{data:ex}=await db.from('block_progress').select('id,attempts').eq('user_id',uid).eq('block_id',blockId).maybeSingle();
   const attempts=(ex?.attempts||0)+1;
   if(ex){await db.from('block_progress').update({attempts}).eq('id',ex.id);}
   else{await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:false,score:0,attempts:1});}
@@ -6606,10 +6597,12 @@ async function renderMentorTrainees(){
 }
 async function renderMentorConfirm(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
-  const{data:trainees}=await db.from('users').select('*').eq('mentor_id',currentProfile.id);
+  const{data:trainees,error:tErr}=await db.from('users').select('*').eq('mentor_id',currentProfile.id);
+  console.log('[MentorConfirm] mentor_id=',currentProfile.id,'trainees=',trainees,'err=',tErr);
   const rows=[];
   for(const t of trainees||[]){
-    const{data:bp}=await db.from('block_progress').select('*').eq('user_id',t.id).eq('passed',true).is('confirmed_by',null);
+    const{data:bp,error:bErr}=await db.from('block_progress').select('*').eq('user_id',t.id).eq('passed',true).is('confirmed_by',null);
+    console.log('[MentorConfirm] trainee=',t.name,'bp=',bp,'err=',bErr);
     for(const b of bp||[]){
       rows.push({trainee:t,bp:b});
     }
@@ -6701,15 +6694,52 @@ async function addStar(id,cur){const n=cur+1;await db.from('users').update({note
 
 async function renderAdminConfirm(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
-  const{data:pending}=await db.from('block_progress').select('*,users(name)').eq('passed',true).is('confirmed_by',null);
-  const{data:handovers}=await db.from('handover').select('*,trainee:users!handover_trainee_id_fkey(name,id),from_mentor:users!handover_from_mentor_id_fkey(name,id)').is('to_mentor_id',null);
+  // два отдельных запроса — без join через foreign key (может быть не настроен)
+  const{data:pendingBP,error:bpErr}=await db.from('block_progress').select('*').eq('passed',true).is('confirmed_by',null);
+  console.log('[AdminConfirm] pendingBP=',pendingBP,'error=',bpErr);
+  const{data:allUsers}=await db.from('users').select('id,name,role').eq('role','trainee');
   const{data:allMentors}=await db.from('users').select('*').eq('role','mentor');
+  const{data:handovers}=await db.from('handover').select('*').is('to_mentor_id',null);
+  // обогащаем pendingBP именами
+  const pending=(pendingBP||[]).map(bp=>{
+    const user=(allUsers||[]).find(u=>u.id===bp.user_id);
+    return{...bp,userName:user?.name||'Неизвестно'};
+  });
+  // обогащаем handovers именами
+  const enrichedHO=(handovers||[]).map(h=>{
+    const trainee=(allUsers||[]).find(u=>u.id===h.trainee_id);
+    const mentor=(allMentors||[]).find(m=>m.id===h.from_mentor_id);
+    return{...h,traineeName:trainee?.name||'—',traineeId:h.trainee_id,mentorName:mentor?.name||'—',mentorId:h.from_mentor_id};
+  });
   setMainHTML(`<div class="page-title">✅ Подтверждения</div>
-    <div class="card-section" style="padding:0 0 8px">Тесты ожидающие подтверждения (${pending?.length||0})</div>
-    ${pending?.length?pending.map(bp=>`<div class="trainee-row"><div class="tr-avatar">${(bp.users?.name||'?')[0]?.toUpperCase()}</div><div><div class="tr-name">${bp.users?.name||'—'}</div><div class="tr-meta">Блок ${bp.block_id} · ${bp.score}% · Попыток: ${bp.attempts||1}</div></div><div class="tr-actions"><button class="btn-small" onclick="confirmBlock('${bp.id}')">✓ Подтвердить</button><button class="btn-danger" onclick="rejectBlock('${bp.id}')">✗ Отклонить</button></div></div>`).join(''):'<div class="callout callout-green">Нет ожидающих подтверждений.</div>'}
+    <div class="card-section" style="padding:0 0 8px">Тесты ожидающие подтверждения (${pending.length})</div>
+    ${pending.length?pending.map(bp=>`<div class="trainee-row">
+      <div class="tr-avatar">${bp.userName[0].toUpperCase()}</div>
+      <div style="flex:1">
+        <div class="tr-name">${bp.userName}</div>
+        <div class="tr-meta">Блок ${bp.block_id} · Результат: ${bp.score||0}% · Попыток: ${bp.attempts||1}</div>
+      </div>
+      <div class="tr-actions">
+        <button class="btn-small" onclick="confirmBlock('${bp.id}')">✓ Подтвердить</button>
+        <button class="btn-danger" onclick="rejectBlock('${bp.id}')">✗ Отклонить</button>
+      </div>
+    </div>`).join(''):'<div class="callout callout-green">Нет ожидающих подтверждений.</div>'}
     <div class="divider"></div>
-    <div class="card-section" style="padding:0 0 8px">Листы передачи (${handovers?.length||0})</div>
-    ${handovers?.length?handovers.map(h=>`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(h.trainee?.name||'?')[0]?.toUpperCase()}</div><div style="flex:1"><div class="tc-name">${h.trainee?.name||'—'}</div><div class="tc-meta">От наставника: ${h.from_mentor?.name||'—'}</div></div></div><div style="background:var(--dark2);border-radius:8px;padding:12px;font-size:13px;color:var(--text-dim);margin-bottom:12px">${h.notes||'—'}</div><div class="flex-row"><select class="form-select" id="m2sel-${h.id}" style="width:200px;padding:6px 10px"><option value="">Выбрать наставника 2</option>${(allMentors||[]).map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}</select><button class="btn-small" onclick="confirmHandover('${h.id}','${h.trainee?.id||''}','${h.from_mentor?.id||''}')">Назначить наставника 2</button></div></div>`).join(''):'<div class="callout callout-green">Нет листов передачи.</div>'}`);
+    <div class="card-section" style="padding:0 0 8px">Листы передачи (${enrichedHO.length})</div>
+    ${enrichedHO.length?enrichedHO.map(h=>`<div class="trainee-card">
+      <div class="tc-header">
+        <div class="tc-avatar">${h.traineeName[0].toUpperCase()}</div>
+        <div style="flex:1"><div class="tc-name">${h.traineeName}</div><div class="tc-meta">От наставника: ${h.mentorName}</div></div>
+      </div>
+      <div style="background:var(--dark2);border-radius:8px;padding:12px;font-size:13px;color:var(--text-dim);margin-bottom:12px">${h.notes||'—'}</div>
+      <div class="flex-row">
+        <select class="form-select" id="m2sel-${h.id}" style="width:200px;padding:6px 10px">
+          <option value="">Выбрать наставника 2</option>
+          ${(allMentors||[]).map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
+        </select>
+        <button class="btn-small" onclick="confirmHandover('${h.id}','${h.traineeId}','${h.mentorId}')">Назначить наставника 2</button>
+      </div>
+    </div>`).join(''):'<div class="callout callout-green">Нет листов передачи.</div>'}`);
 }
 async function confirmBlock(id){await db.from('block_progress').update({confirmed_by:'admin',confirmed_at:new Date().toISOString()}).eq('id',id);alert('Блок подтверждён');renderAdminConfirm();}
 async function rejectBlock(id){await db.from('block_progress').update({passed:false}).eq('id',id);alert('Блок отклонён — стажёр должен пересдать');renderAdminConfirm();}
