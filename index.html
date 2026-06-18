@@ -1241,6 +1241,42 @@ const QUIZ_BANK={
     ],
     correct: [2],
     explanation: "Рабочую форму нельзя выносить за пределы ресторана. Это стандартное правило — форма остаётся в ресторане."
+  },
+  // добор до 20
+  {
+    id:"b2_q16", type:"single",
+    question:"Официант опаздывает на смену на 3 минуты. Он сразу встаёт в работу, никому не говоря. Это правильно?",
+    options:["Да — главное приступить к работе","Нет — нужно сообщить администратору и зафиксировать опоздание","Да — 3 минуты не считаются опозданием","Нет — нужно уйти и прийти вовремя"],
+    correct:[1],
+    explanation:"Любое опоздание фиксируется. Молча встать в работу — значит скрыть нарушение. Администратор должен знать."
+  },
+  {
+    id:"b2_q17", type:"single",
+    question:"Стажёр вышел на смену, но забыл часы. Что делать?",
+    options:["Работать без часов — ничего страшного","Попросить у коллеги запасные или сообщить администратору","Уйти домой за часами","Использовать телефон вместо часов весь день"],
+    correct:[1],
+    explanation:"Часы — обязательный элемент формы. Нужно сразу сообщить администратору и решить вопрос, а не игнорировать."
+  },
+  {
+    id:"b2_q18", type:"single",
+    question:"На пятиминутке администратор объявил стоп-лист. Через час официант всё равно предложил гостю блюдо из стоп-листа. Что произошло?",
+    options:["Ничего страшного — гость может подождать","Грубая ошибка — официант не усвоил информацию или проигнорировал","Нормально — иногда позиции возвращаются","Виноват администратор, который плохо донёс информацию"],
+    correct:[1],
+    explanation:"Стоп-лист — критическая информация. Предложить недоступное блюдо гостю — профессиональный провал, который ведёт к конфликту и потере доверия."
+  },
+  {
+    id:"b2_q19", type:"single",
+    question:"Официант закончил смену, но стейшен не убран и не передан следующей смене. Что это нарушает?",
+    options:["Ничего — следующая смена сама разберётся","Стандарт закрытия зоны и принцип командной работы","Только личную ответственность","Правила гигиены, но не регламент"],
+    correct:[1],
+    explanation:"Закрытие зоны — обязательная часть работы. Не передать стейшен в порядке — подвести следующего коллегу и нарушить стандарт."
+  },
+  {
+    id:"b2_q20", type:"single",
+    question:"Во время смены официант чувствует себя плохо. Как поступить правильно?",
+    options:["Доработать смену и ничего не говорить","Сразу уйти домой","Сообщить администратору — тот решит как перераспределить зоны","Попросить гостей самообслуживаться"],
+    correct:[2],
+    explanation:"Самовольно уходить нельзя. Сообщи администратору — он найдёт решение. Работать в плохом состоянии без предупреждения тоже недопустимо."
   }
 
 ],
@@ -1424,6 +1460,41 @@ const QUIZ_BANK={
     ],
     correct: 1,
     explanation: "Стандарт замены приборов: сначала принести чистый прибор гостю, только потом поднять упавший. Гость не должен ждать без прибора."
+  },
+  {
+    id:"b3_q16",
+    question:"Гость просит порекомендовать вино к рыбному блюду, но официант не разбирается в карте вин. Что делать?",
+    options:["Назвать любое вино наугад","Сказать 'не знаю' и уйти","Признать, что нужно уточнить, и сразу позвать сомелье или компетентного коллегу","Предложить гостю самому выбрать"],
+    correct:2,
+    explanation:"Честность + быстрое решение — правильная модель. Выдумывать рекомендацию опасно: гость может разочароваться. Позвать того, кто знает — профессионально."
+  },
+  {
+    id:"b3_q17",
+    question:"Официант подаёт блюдо и замечает, что оно выглядит не так, как должно по стандарту. Как правильно действовать?",
+    options:["Поставить на стол — гость сам скажет если что","Вернуть на кухню и сообщить шеф-повару или администратору","Извиниться перед гостем и объяснить что так задумано","Заменить блюдо на другое без согласования"],
+    correct:1,
+    explanation:"Официант — последний контроль качества перед гостем. Если что-то не так — не ставить на стол, вернуть и решить вопрос с кухней."
+  },
+  {
+    id:"b3_q18",
+    question:"Гость попросил счёт 5 минут назад. Официант занят другим столом. Что приоритетнее?",
+    options:["Закончить текущее действие, потом принести счёт","Принести счёт немедленно — это финальная точка обслуживания","Попросить другого официанта принести счёт","Объяснить гостю что занят"],
+    correct:1,
+    explanation:"Счёт — финал визита. Задержка здесь портит всё впечатление. Это приоритет. Если невозможно сразу — попроси коллегу."
+  },
+  {
+    id:"b3_q19",
+    question:"Гость за столом явно торопится: смотрит на часы, нервничает. Как адаптировать обслуживание?",
+    options:["Обслуживать в обычном темпе — стандарт един для всех","Ускорить подачу, уточнить у гостя удобный темп, предупредить кухню","Предложить гостю уйти и вернуться позже","Игнорировать — это не проблема официанта"],
+    correct:1,
+    explanation:"Наблюдательный официант считывает невербальные сигналы. Адаптироваться к темпу гостя — часть качественного сервиса."
+  },
+  {
+    id:"b3_q20",
+    question:"После основного блюда официант не подошёл к столу ни разу. Гость ждёт десертного меню. Что нарушено?",
+    options:["Ничего — гость должен сам позвать","Контроль стола: официант обязан подойти через 2–3 минуты после подачи","Только скорость обслуживания","Правила подачи напитков"],
+    correct:1,
+    explanation:"После подачи каждого блюда официант возвращается к столу — убедиться что всё в порядке, предложить следующий курс. Это стандарт контроля стола."
   }
 ],
   4:[
@@ -1576,6 +1647,56 @@ const QUIZ_BANK={
       { text: "Выйти и извиниться перед гостями за настроение", correct: false }
     ],
     explanation: "УОН — это профессиональный инструмент. Осанка + улыбка через силу реально меняют состояние через несколько минут. Плохое настроение остаётся за дверью."
+  },
+  {
+    question:"Гость заказал стейк. Ты можешь предложить ему соус и гарнир отдельно. Когда лучший момент?",
+    options:[
+      {text:"После того как гость сделал основной заказ", correct:true},
+      {text:"Перед тем как он откроет меню", correct:false},
+      {text:"Когда принесёшь блюдо на стол", correct:false},
+      {text:"Только если гость сам спросит", correct:false}
+    ],
+    explanation:"Апсейл после основного заказа — естественный момент. Гость уже определился с главным, и дополнение воспринимается как забота, а не давление."
+  },
+  {
+    question:"Гость говорит: 'У вас дорого'. Как ответить чтобы не потерять продажу?",
+    options:[
+      {text:"Согласиться и предложить самое дешёвое", correct:false},
+      {text:"Объяснить что входит в цену: качество продукта, подача, сервис", correct:true},
+      {text:"Промолчать и дать меню", correct:false},
+      {text:"Предложить скидку", correct:false}
+    ],
+    explanation:"Цена оправдывается ценностью. Объясни что гость получает за эти деньги. Скидки давать без разрешения руководства нельзя."
+  },
+  {
+    question:"Гость заказал один напиток и долго сидит. Когда предложить ещё один?",
+    options:[
+      {text:"Когда бокал почти пуст — примерно на 1/4", correct:true},
+      {text:"Сразу после того как он выпил половину", correct:false},
+      {text:"Только если гость сам попросит", correct:false},
+      {text:"Каждые 10 минут спрашивать", correct:false}
+    ],
+    explanation:"Предложить повтор когда бокал почти пуст — правильный тайминг. Раньше — навязчиво. Позже — упущенная продажа и гость без напитка."
+  },
+  {
+    question:"Гость спрашивает: 'Что у вас вкусного?' Как ответить правильно?",
+    options:[
+      {text:"'Всё вкусно' — и дать меню", correct:false},
+      {text:"Назвать 2–3 конкретных блюда с коротким описанием, которые ты сам рекомендуешь", correct:true},
+      {text:"Перечислить всё меню", correct:false},
+      {text:"Спросить что гость обычно заказывает в других ресторанах", correct:false}
+    ],
+    explanation:"Конкретные рекомендации с кратким описанием — это экспертная позиция. 'Всё вкусно' — пустой ответ, который не помогает выбрать."
+  },
+  {
+    question:"Ты предложил гостю десерт — он отказался. Что делать дальше?",
+    options:[
+      {text:"Настаивать — возможно гость просто стесняется", correct:false},
+      {text:"Принять отказ спокойно, предложить чай или кофе", correct:true},
+      {text:"Больше ничего не предлагать", correct:false},
+      {text:"Уточнить почему гость отказался", correct:false}
+    ],
+    explanation:"Один отказ — не конец продажи. Перейди к следующей логичной позиции: горячий напиток к концу трапезы — естественное предложение."
   }
 ],
   5:[
@@ -1708,6 +1829,76 @@ const QUIZ_BANK={
       { text: "Тихо предупредить только тех гостей, кто рядом с вами", correct: false }
     ],
     explanation: "При запахе дыма — действуй немедленно: сигнализация + эвакуация. Паника убивает быстрее огня — спокойный голос обязателен. МЧС — 101. Не возвращаться в здание без разрешения."
+  },
+  {
+    q:"Гость требует компенсацию за долгое ожидание — предлагает заплатить только половину счёта. Твои действия?",
+    options:[
+      {text:"Согласиться — лишь бы гость ушёл довольным", correct:false},
+      {text:"Отказать — клиент должен платить полную сумму", correct:false},
+      {text:"Принести извинения, объяснить ситуацию и позвать администратора принять решение", correct:true},
+      {text:"Предложить скидку 10% от себя", correct:false}
+    ],
+    explanation:"Решение о компенсации принимает администратор, не официант. Твоя задача — выслушать, извиниться и немедленно передать вопрос руководству."
+  },
+  {
+    q:"Двое гостей за соседними столами начали громко спорить между собой. Официант стал свидетелем. Что делать?",
+    options:[
+      {text:"Вмешаться и призвать их к тишине", correct:false},
+      {text:"Игнорировать — это не твоё дело", correct:false},
+      {text:"Сообщить администратору — пусть он оценит ситуацию", correct:true},
+      {text:"Попросить других гостей пересесть", correct:false}
+    ],
+    explanation:"Конфликт между гостями — зона администратора. Официант не медиатор. Быстро и тихо сообщи руководству, не вмешиваясь."
+  },
+  {
+    q:"Гость утверждает что нашёл в блюде посторонний предмет. Как реагировать?",
+    options:[
+      {text:"Усомниться — скорее всего гость сам подложил", correct:false},
+      {text:"Извиниться, убрать блюдо, немедленно позвать администратора, не выбрасывать предмет", correct:true},
+      {text:"Предложить заменить блюдо и не говорить администратору", correct:false},
+      {text:"Сказать что такого быть не может — кухня работает по стандарту", correct:false}
+    ],
+    explanation:"Посторонний предмет — серьёзный инцидент. Никогда не спорь, не выбрасывай предмет (это доказательство), немедленно зови администратора."
+  },
+  {
+    q:"Гость ведёт себя агрессивно и оскорбляет тебя лично. Как правильно реагировать?",
+    options:[
+      {text:"Ответить в том же тоне — нельзя позволять на себя кричать", correct:false},
+      {text:"Молча уйти от стола", correct:false},
+      {text:"Сохранять спокойный тон, не вступать в конфликт, сообщить администратору", correct:true},
+      {text:"Попросить гостя покинуть заведение", correct:false}
+    ],
+    explanation:"Личные оскорбления — не повод отвечать агрессией. Сохраняй профессионализм, не эскалируй конфликт, немедленно передай ситуацию администратору."
+  },
+  {
+    q:"Официант видит что гость за столом потерял сознание. Первое действие?",
+    options:[
+      {text:"Попросить других гостей помочь","correct":false},
+      {text:"Громко звать на помощь и немедленно сообщить администратору/вызвать скорую", correct:true},
+      {text:"Попытаться самостоятельно привести гостя в чувство", correct:false},
+      {text:"Подождать — возможно гость просто заснул", correct:false}
+    ],
+    explanation:"Медицинская ситуация — вызов скорой и администратор. Не пытайся лечить. Действуй быстро: шум привлечёт помощь, руководство организует скорую."
+  },
+  {
+    q:"В зале задымление, но огня не видно. Нужно ли объявлять эвакуацию?",
+    options:[
+      {text:"Нет — сначала найти источник дыма самостоятельно", correct:false},
+      {text:"Да, сразу объявить эвакуацию всех гостей", correct:false},
+      {text:"Сообщить администратору немедленно — решение об эвакуации принимает он", correct:true},
+      {text:"Открыть окна и подождать", correct:false}
+    ],
+    explanation:"Любое задымление — сигнал тревоги. Не действуй самостоятельно. Немедленно сообщи администратору — он оценивает и принимает решение об эвакуации."
+  },
+  {
+    q:"Гость оставил на столе телефон и ушёл. Прошло 20 минут. Что делать?",
+    options:[
+      {text:"Оставить на столе — гость вернётся", correct:false},
+      {text:"Сдать администратору и зафиксировать находку", correct:true},
+      {text:"Убрать в ящик стейшена до конца смены", correct:false},
+      {text:"Позвонить с этого телефона последнему контакту", correct:false}
+    ],
+    explanation:"Забытые вещи сдаются администратору с фиксацией — время, место, описание. Это стандарт безопасности и честности заведения."
   }
 ],
   6:[
@@ -1878,14 +2069,136 @@ const QUIZ_BANK={
     ],
     correct: 2,
     explanation: "Первая неделя — статус «Стажёр». Сотрудник изучает основы под наблюдением и ещё не проходил аттестацию по блокам."
+  },
+  {
+    id:"b6_q15",
+    question:"Стажёр сдал Блок 6 с первого раза на 100% и хочет сразу получить статус «Легенда». Это возможно?",
+    options:[
+      "Да — если тест сдан идеально",
+      "Нет — статус присваивается только после минимум 6 месяцев работы и решения руководства",
+      "Да — наставник может ходатайствовать о досрочном присвоении",
+      "Нет — статус 'Легенда' вообще не существует"
+    ],
+    correct:1,
+    explanation:"Статус 'Легенда' — не за тест. Это признание опыта, вклада и стабильной работы в течение длительного времени. Решение принимает руководство."
+  },
+  {
+    id:"b6_q16",
+    question:"Официант на статусе «Новичок» систематически нарушает стандарт внешнего вида. Какое последствие предусмотрено?",
+    options:[
+      "Устное предупреждение без последствий",
+      "Автоматическое понижение в статусе",
+      "Фиксация нарушений и возможное переаттестование по Блоку 1",
+      "Штраф из зарплаты по решению бухгалтерии"
+    ],
+    correct:2,
+    explanation:"Систематические нарушения стандарта — основание для переаттестации по соответствующему блоку. Статус не защищает от ответственности."
+  },
+  {
+    id:"b6_q17",
+    question:"Официант прошёл все блоки в режиме «Самостоятельно». Считается ли это полноценной аттестацией?",
+    options:[
+      "Да — результат тот же",
+      "Да, но статус выше «Новичка» требует прохождения минимум части блоков с наставником",
+      "Нет — все блоки обязательно нужен наставник",
+      "Зависит от решения администратора в каждом конкретном случае"
+    ],
+    correct:3,
+    explanation:"Самостоятельный режим допустим, но финальная аттестация и присвоение статуса подтверждаются администратором — он оценивает реальную работу, а не только тесты."
+  },
+  {
+    id:"b6_q18",
+    question:"Что происходит, если официант сдаёт повторную аттестацию и получает результат ниже предыдущего?",
+    options:[
+      "Ничего — засчитывается лучший результат",
+      "Статус может быть временно понижен до уточнения ситуации",
+      "Повторная аттестация автоматически аннулируется",
+      "Официант отстраняется от работы"
+    ],
+    correct:1,
+    explanation:"Снижение результата при повторной аттестации — сигнал. Администратор анализирует причину и может временно скорректировать статус до прояснения."
+  },
+  {
+    id:"b6_q19",
+    question:"Гость напрямую спрашивает официанта какой у него 'уровень' или квалификация. Как правильно ответить?",
+    options:[
+      "Назвать свой статус по системе аттестации (Стажёр/Новичок/Профи/Легенда)",
+      "Сказать что такой системы нет",
+      "Уйти от ответа — это внутренняя информация",
+      "Ответить что все официанты одинаковые"
+    ],
+    correct:2,
+    explanation:"Внутренняя система аттестации — не для гостей. Корректный ответ: уйти от темы или ответить нейтрально ('Я работаю здесь X месяцев')."
+  },
+  {
+    id:"b6_q20",
+    question:"Официант на статусе «Профи» помогает стажёру разобраться в меню в свободную минуту. Это входит в его обязанности?",
+    options:[
+      "Нет — он не наставник",
+      "Да — старшие коллеги обязаны обучать младших",
+      "Это личная инициатива, которая поощряется, но не является обязанностью",
+      "Только если назначен наставником официально"
+    ],
+    correct:2,
+    explanation:"Взаимопомощь поощряется и отражается в звёздной системе. Но официальные обязанности наставника — у назначенного наставника. Инициатива сверх нормы — плюс к репутации."
   }
 ]
 };
 
+// нормализует вопрос к единому формату {q, opts, c, e}
+function normalizeQ(raw){
+  // определяем текст вопроса
+  const q = raw.q || raw.question || '';
+  // определяем объяснение
+  const e = raw.e || raw.explain || raw.explanation || '';
+  // определяем варианты ответа
+  let opts, c;
+  if(Array.isArray(raw.opts)){
+    opts = raw.opts;
+    c = typeof raw.c === 'number' ? raw.c : 0;
+  } else if(Array.isArray(raw.options)){
+    const firstOpt = raw.options[0];
+    if(typeof firstOpt === 'object' && firstOpt !== null && 'text' in firstOpt){
+      // формат [{text:'...',correct:true/false}]
+      opts = raw.options.map(o => o.text);
+      c = raw.options.findIndex(o => o.correct === true);
+      if(c < 0) c = 0;
+    } else {
+      opts = raw.options;
+      const corr = raw.correct;
+      if(Array.isArray(corr)) c = corr[0];
+      else if(typeof corr === 'number') c = corr;
+      else c = 0;
+    }
+  } else {
+    opts = ['—','—','—','—'];
+    c = 0;
+  }
+  // убеждаемся что 4 варианта
+  while(opts.length < 4) opts.push('—');
+  opts = opts.slice(0, 4);
+  return {q, opts, c, e};
+}
+
+const _shownQuestions = {}; // отслеживание показанных вопросов по блоку
+
 function getRandomQuiz(blockId){
-  const bank=QUIZ_BANK[blockId]||[];
-  const shuffled=[...bank].sort(()=>Math.random()-0.5);
-  return shuffled.slice(0,Math.min(6,shuffled.length));
+  const bank=(QUIZ_BANK[blockId]||[]).map(normalizeQ);
+  if(!_shownQuestions[blockId]) _shownQuestions[blockId] = [];
+  let shown = _shownQuestions[blockId];
+  // если показали все — сбрасываем
+  if(shown.length >= bank.length) _shownQuestions[blockId] = shown = [];
+  // выбираем из ещё не показанных
+  const available = bank.map((_,i)=>i).filter(i => !shown.includes(i));
+  const shuffled = [...available].sort(()=>Math.random()-0.5);
+  const picked = shuffled.slice(0, Math.min(5, shuffled.length));
+  // если не хватает — добираем из показанных
+  if(picked.length < 5){
+    const extra = [...shown].sort(()=>Math.random()-0.5).slice(0, 5 - picked.length);
+    picked.push(...extra);
+  }
+  _shownQuestions[blockId] = [...shown, ...picked];
+  return picked.map(i => bank[i]);
 }
 
 const QUIZZES={1:getRandomQuiz(1),2:getRandomQuiz(2),3:getRandomQuiz(3),4:getRandomQuiz(4),5:getRandomQuiz(5),6:getRandomQuiz(6)};
@@ -1983,7 +2296,7 @@ function renderSidebar(){
   const nav=document.getElementById('sidebarNav');
   let items=[];
   if(p.role==='trainee')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'blocks',icon:'📚',label:'Блоки обучения'},{id:'progress',icon:'📊',label:'Мой прогресс'}];
-  else if(p.role==='mentor')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'trainees',icon:'👥',label:'Мои стажёры'},{id:'blocks',icon:'📚',label:'Материалы'}];
+  else if(p.role==='mentor')items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'trainees',icon:'👥',label:'Мои стажёры'},{id:'mentor-confirm',icon:'✅',label:'Подтверждения'},{id:'blocks',icon:'📚',label:'Материалы'}];
   else items=[{id:'dashboard',icon:'🏠',label:'Главная'},{id:'all-trainees',icon:'👥',label:'Все стажёры'},{id:'all-mentors',icon:'👨‍🏫',label:'Наставники'},{id:'confirm',icon:'✅',label:'Подтверждения'}];
   nav.innerHTML=items.map(i=>'<div class="nav-item" data-page="'+i.id+'" onclick="showPage(\''+i.id+'\')"><div class="nav-icon">'+i.icon+'</div><div class="nav-text">'+i.label+'</div></div>').join('');
 }
@@ -1996,6 +2309,7 @@ function showPage(id){
   else if(id==='blocks')renderBlocksList();
   else if(id==='progress')renderTraineeProgress();
   else if(id==='trainees')renderMentorTrainees();
+  else if(id==='mentor-confirm')renderMentorConfirm();
   else if(id==='all-trainees')renderAdminTrainees();
   else if(id==='all-mentors')renderAdminMentors();
   else if(id==='confirm')renderAdminConfirm();
@@ -2074,7 +2388,7 @@ function renderBlocksGrid(bpData,allUnlocked=false,selfStudy=false){
 }
 
 // BLOCK VIEW
-let activeBlockId=null,quizState=null;
+let activeBlockId=null,quizState=null,currentTraineeMode='mentor';
 
 function openBlock(id){activeBlockId=id;renderBlockView(id);}
 
@@ -2097,11 +2411,23 @@ function renderBlockView(id){
 }
 
 function switchBlockTab(tab,id){
+  if(tab==='material'&&quizState&&!quizState.done){alert('\u26a0\ufe0f \u0422\u0435\u0441\u0442 \u0435\u0449\u0451 \u043d\u0435 \u0437\u0430\u0432\u0435\u0440\u0448\u0451\u043d. \u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u043f\u0440\u043e\u0439\u0434\u0438 \u0442\u0435\u0441\u0442 \u0434\u043e \u043a\u043e\u043d\u0446\u0430.');return;}
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   const el=document.getElementById('tab-'+tab);if(el)el.classList.add('active');
   if(tab==='material')renderMaterial(id);
-  else if(tab==='quiz')startQuiz(id);
+  else if(tab==='quiz')showModeSelect(id);
   else renderChecklist(id);
+}
+
+function showModeSelect(blockId){
+  if(currentProfile.role!=='trainee'){startQuiz(blockId);return;}
+  const body=document.getElementById('blockBody');
+  body.innerHTML='<div class="quiz-wrap fade-in"><div class="quiz-q" style="text-align:center;padding:32px 20px"><div class="q-label" style="margin-bottom:12px">\u0412\u044b\u0431\u0435\u0440\u0438 \u0440\u0435\u0436\u0438\u043c \u043f\u0440\u043e\u0445\u043e\u0436\u0434\u0435\u043d\u0438\u044f</div><div class="q-text" style="margin-bottom:28px">\u041a\u0430\u043a \u0442\u044b \u0445\u043e\u0447\u0435\u0448\u044c \u043f\u0440\u043e\u0445\u043e\u0434\u0438\u0442\u044c \u044d\u0442\u043e\u0442 \u0431\u043b\u043e\u043a?</div><div style="display:flex;flex-direction:column;gap:12px;max-width:340px;margin:0 auto"><button class="btn-quiz" onclick="setModeAndStart(&apos;mentor&apos;,'+blockId+')" style="padding:16px 20px;font-size:15px">\ud83d\udc68\u200d\ud83c\udfeb \u0421 \u043d\u0430\u0441\u0442\u0430\u0432\u043d\u0438\u043a\u043e\u043c<br><span style="font-size:12px;opacity:.7;font-weight:400">\u041f\u043e\u0441\u043b\u0435 \u0441\u0434\u0430\u0447\u0438 \u2014 \u043d\u0430\u0441\u0442\u0430\u0432\u043d\u0438\u043a \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u0435\u0442 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442</span></button><button class="btn-ghost" onclick="setModeAndStart(&apos;self&apos;,'+blockId+')" style="padding:16px 20px;font-size:15px">\ud83d\udcda \u0421\u0430\u043c\u043e\u0441\u0442\u043e\u044f\u0442\u0435\u043b\u044c\u043d\u043e<br><span style="font-size:12px;opacity:.7;font-weight:400">\u041f\u0440\u0438 4/5 \u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0445 \u2014 \u0441\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439 \u0431\u043b\u043e\u043a \u043e\u0442\u043a\u0440\u044b\u0432\u0430\u0435\u0442\u0441\u044f \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438</span></button></div></div></div>';
+}
+
+function setModeAndStart(mode,blockId){
+  currentTraineeMode=mode;
+  startQuiz(blockId);
 }
 
 
@@ -6175,8 +6501,10 @@ function goBack(){
 function renderQuizQ(){
   const qs=quizState,q=QUIZZES[qs.id]?.[qs.current],total=QUIZZES[qs.id]?.length||0,body=document.getElementById('blockBody');
   if(qs.done){
-    const correct=qs.answers.filter(a=>a).length,pct=Math.round((correct/total)*100),pass=pct>=70;
-    body.innerHTML=`<div class="quiz-wrap fade-in"><div class="quiz-result"><div class="res-score">${pct}%</div><div class="res-label">${correct} из ${total} правильных</div><div class="res-verdict ${pass?'pass':'fail'}">${pass?'✓ Зачёт':'✗ Не зачёт'}</div><div class="res-hint">${pass?'Отлично! Результат сохранён.':'Изучи материал и попробуй снова. Нужно минимум 70%.'}</div>${pass&&currentProfile.role==='trainee'?'<div class="res-note">⏳ Ожидай подтверждения администратора.</div>':''}<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn-quiz" onclick="startQuiz(${qs.id})">Пройти снова</button>${pass?'<button class="btn-ghost" onclick="goBack()">Назад</button>':''}</div></div></div>`;
+    const correct=qs.answers.filter(a=>a).length,pct=Math.round((correct/total)*100),pass=correct>=4;
+    const isSelf=currentTraineeMode==='self';
+    const passNote=pass&&currentProfile.role==='trainee'?(isSelf?'<div class="res-note">✅ Следующий блок разблокирован автоматически.</div>':'<div class="res-note">⏳ Ожидай подтверждения наставника.</div>'):'';
+    body.innerHTML=`<div class="quiz-wrap fade-in"><div class="quiz-result"><div class="res-score">${correct}/5</div><div class="res-label">${correct} из ${total} правильных</div><div class="res-verdict ${pass?'pass':'fail'}">${pass?'✓ Зачёт':'✗ Не зачёт'}</div><div class="res-hint">${pass?'Отлично! Результат сохранён.':'Изучи материал и попробуй снова. Нужно минимум 4 из 5.'}</div>${passNote}<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn-quiz" onclick="startQuiz(${qs.id})">Пройти снова</button>${pass?'<button class="btn-ghost" onclick="goBack()">Назад</button>':''}</div></div></div>`;
     if(pass&&currentProfile.role==='trainee')saveBlockResult(qs.id,pct);return;
   }
   if(!q)return;
@@ -6195,10 +6523,25 @@ function selectOpt(i){
 function nextQ(){quizState.current++;quizState.selected=null;if(quizState.current>=(QUIZZES[quizState.id]?.length||0))quizState.done=true;renderQuizQ();}
 async function saveBlockResult(blockId,score){
   const uid=currentProfile.id;
+  const isSelf=currentTraineeMode==='self';
   const{data:ex}=await db.from('block_progress').select('id,attempts').eq('user_id',uid).eq('block_id',blockId).single();
   const attempts=(ex?.attempts||0)+1;
-  if(ex){await db.from('block_progress').update({passed:true,score,attempts}).eq('id',ex.id);}
-  else{await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:true,score,attempts:1});}
+  // в самостоятельном режиме сразу помечаем confirmed (confirmed_by = uid)
+  const confirmed_by=isSelf?uid:null;
+  if(ex){await db.from('block_progress').update({passed:true,score,attempts,confirmed_by}).eq('id',ex.id);}
+  else{await db.from('block_progress').insert({user_id:uid,block_id:blockId,passed:true,score,attempts:1,confirmed_by});}
+  // если режим "с наставником" — создаём уведомление наставнику
+  if(!isSelf){
+    const mentorId=currentProfile.mentor_id;
+    if(mentorId){
+      await db.from('mentor_notifications').insert({
+        trainee_id:uid,
+        mentor_id:mentorId,
+        block_id:blockId,
+        status:'pending'
+      }).catch(()=>{});
+    }
+  }
 }
 
 async function trackAttempt(blockId){
@@ -6242,7 +6585,16 @@ async function renderMentorDashboard(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
   const{data:trainees}=await db.from('users').select('*').eq('mentor_id',currentProfile.id);
   const count=(trainees||[]).length,stars=currentProfile.notes?parseInt(currentProfile.notes)||0:0;
-  setMainHTML(`<div class="page-title">👨‍🏫 Панель наставника</div><div class="page-sub">${currentProfile.name}</div><div class="stats-row"><div class="stat-card"><div class="stat-num">${count}</div><div class="stat-label">Стажёров</div></div><div class="stat-card"><div class="stat-num">${stars}</div><div class="stat-label">Звёзд ⭐</div></div><div class="stat-card"><div class="stat-num">${2-count}</div><div class="stat-label">Свободных мест</div></div></div><div class="card-section" style="padding:0 0 8px;margin-top:8px">Мои стажёры</div>${count===0?'<div class="callout">Стажёры пока не назначены.</div>':(trainees||[]).map(t=>traineeCardHTML(t)).join('')}`);
+  // считаем сколько блоков ожидают подтверждения у моих стажёров
+  let pendingCount=0;
+  const allBP=[];
+  for(const t of trainees||[]){
+    const{data:bp}=await db.from('block_progress').select('*').eq('user_id',t.id).eq('passed',true).is('confirmed_by',null);
+    if(bp?.length)pendingCount+=bp.length;
+    allBP.push({traineeId:t.id,bp:bp||[]});
+  }
+  const pendingBanner=pendingCount>0?`<div class="callout" style="cursor:pointer;margin-bottom:12px" onclick="renderMentorConfirm()">🔔 ${pendingCount} блок(а) ожидают твоего подтверждения → нажми здесь</div>`:'';
+  setMainHTML(`<div class="page-title">👨‍🏫 Панель наставника</div><div class="page-sub">${currentProfile.name}</div><div class="stats-row"><div class="stat-card"><div class="stat-num">${count}</div><div class="stat-label">Стажёров</div></div><div class="stat-card"><div class="stat-num">${stars}</div><div class="stat-label">Звёзд ⭐</div></div><div class="stat-card"><div class="stat-num">${pendingCount}</div><div class="stat-label">Ожидают подтв.</div></div></div>${pendingBanner}<div class="card-section" style="padding:0 0 8px;margin-top:8px">Мои стажёры</div>${count===0?'<div class="callout">Стажёры пока не назначены.</div>':(trainees||[]).map(t=>traineeCardHTML(t)).join('')}`);
   for(const t of trainees||[])loadTraineeBP(t);
 }
 async function renderMentorTrainees(){
@@ -6252,11 +6604,52 @@ async function renderMentorTrainees(){
   setMainHTML(`<div class="page-title">👥 Мои стажёры</div><div id="traineesList">${trainees.map(t=>traineeCardHTML(t)).join('')}</div>`);
   for(const t of trainees)loadTraineeBP(t);
 }
+async function renderMentorConfirm(){
+  setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
+  const{data:trainees}=await db.from('users').select('*').eq('mentor_id',currentProfile.id);
+  const rows=[];
+  for(const t of trainees||[]){
+    const{data:bp}=await db.from('block_progress').select('*').eq('user_id',t.id).eq('passed',true).is('confirmed_by',null);
+    for(const b of bp||[]){
+      rows.push({trainee:t,bp:b});
+    }
+  }
+  setMainHTML(`<div class="page-title">✅ Подтверждения блоков</div>
+    ${rows.length===0?'<div class="callout callout-green">Нет блоков, ожидающих подтверждения.</div>':
+    rows.map(r=>`<div class="trainee-row">
+      <div class="tr-avatar">${(r.trainee.name||'?')[0].toUpperCase()}</div>
+      <div style="flex:1">
+        <div class="tr-name">${r.trainee.name}</div>
+        <div class="tr-meta">Блок ${r.bp.block_id} · Результат: ${r.bp.score||0}% · Попыток: ${r.bp.attempts||1}</div>
+      </div>
+      <div class="tr-actions">
+        <button class="btn-small" onclick="mentorConfirmBlock('${r.bp.id}','${r.trainee.name}',${r.bp.block_id})">✓ Подтвердить</button>
+        <button class="btn-danger" onclick="mentorRejectBlock('${r.bp.id}','${r.trainee.name}')">✗ Не зачёт</button>
+      </div>
+    </div>`).join('')}`);
+}
+async function mentorConfirmBlock(bpId,traineeName,blockId){
+  await db.from('block_progress').update({confirmed_by:currentProfile.id,confirmed_at:new Date().toISOString()}).eq('id',bpId);
+  alert(`✓ Блок ${blockId} подтверждён для ${traineeName}. Следующий блок разблокирован.`);
+  renderMentorConfirm();
+}
+async function mentorRejectBlock(bpId,traineeName){
+  await db.from('block_progress').update({passed:false,confirmed_by:null}).eq('id',bpId);
+  alert(`✗ Блок отклонён для ${traineeName}. Стажёр должен пересдать.`);
+  renderMentorConfirm();
+}
 function traineeCardHTML(t){return`<div class="trainee-card" id="tc-${t.id}"><div class="tc-header"><div class="tc-avatar">${(t.name||'?')[0].toUpperCase()}</div><div><div class="tc-name">${t.name}</div><div class="tc-meta">Стажёр</div></div></div><div class="blocks-mini" id="bm-${t.id}"><span style="font-size:12px;color:var(--text-faint)">Загрузка...</span></div><div id="ho-${t.id}"></div></div>`;}
 async function loadTraineeBP(t){
   const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',t.id);
   const bmEl=document.getElementById(`bm-${t.id}`);if(!bmEl)return;
   bmEl.innerHTML=BLOCKS.slice(0,5).map(b=>{const bp=(bpData||[]).find(x=>x.block_id===b.id);let cls='bm-locked',txt=`Б${b.id}`;if(bp?.passed&&bp?.confirmed_by){cls='bm-done';txt=`Б${b.id} ✓`;}else if(bp?.passed&&!bp?.confirmed_by){cls='bm-needs-confirm';txt=`Б${b.id} ⏳`;}return`<span class="bm ${cls}">${txt}</span>`;}).join('');
+  // кнопки подтверждения для каждого блока без confirmed_by
+  const pending=(bpData||[]).filter(b=>b.passed&&!b.confirmed_by);
+  const bmPendingEl=document.getElementById(`bm-${t.id}`);
+  if(pending.length&&bmPendingEl){
+    const btns=pending.map(b=>`<button class="btn-small" style="margin-top:8px" onclick="mentorConfirmBlock('${b.id}','${t.name}',${b.block_id})">✓ Подтвердить блок ${b.block_id}</button>`).join('');
+    bmPendingEl.insertAdjacentHTML('afterend',`<div style="margin-top:4px">${btns}</div>`);
+  }
   const b2=(bpData||[]).find(x=>x.block_id===2&&x.passed&&x.confirmed_by);
   const b5=(bpData||[]).find(x=>x.block_id===5&&x.passed&&x.confirmed_by);
   const{data:existingHO}=await db.from('handover').select('*').eq('trainee_id',t.id).eq('from_mentor_id',currentProfile.id);
