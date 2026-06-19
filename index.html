@@ -2232,6 +2232,22 @@ function updateAuthUI(){
 
 function showAuthError(msg){const el=document.getElementById('authError');el.textContent=msg;el.classList.add('show');}
 
+async function createUserProfile(userId,name,role,attempt){
+  attempt=attempt||1;
+  const{error:pe}=await db.from('users').insert({id:userId,name,role,block_current:1,block_passed:[],status:'active'});
+  if(pe){
+    // если профиль уже существует — это не ошибка, просто продолжаем
+    if(pe.message&&pe.message.toLowerCase().includes('duplicate'))return{error:null};
+    // повторяем попытку до 3 раз с небольшой задержкой — на случай сетевого сбоя
+    if(attempt<3){
+      await new Promise(r=>setTimeout(r,800));
+      return createUserProfile(userId,name,role,attempt+1);
+    }
+    return{error:pe};
+  }
+  return{error:null};
+}
+
 async function doRegister(){
   const name=document.getElementById('regName').value.trim();
   const email=document.getElementById('regEmail').value.trim();
@@ -2239,11 +2255,18 @@ async function doRegister(){
   if(!name||!email||!pass){showAuthError('Заполни все поля');return;}
   if(pass.length<6){showAuthError('Пароль минимум 6 символов');return;}
   const btn=document.getElementById('btnRegister');
+  if(btn.disabled)return; // защита от двойного клика
   btn.disabled=true;btn.textContent='Создаю...';
   const{data,error}=await db.auth.signUp({email,password:pass});
   if(error){showAuthError(error.message);btn.disabled=false;btn.textContent='Создать аккаунт';return;}
-  const{error:pe}=await db.from('users').insert({id:data.user.id,name,role:currentRole,block_current:1,block_passed:[],status:'active'});
-  if(pe){showAuthError('Ошибка профиля: '+pe.message);btn.disabled=false;btn.textContent='Создать аккаунт';return;}
+  if(!data.user){showAuthError('Не удалось создать аккаунт. Попробуй снова.');btn.disabled=false;btn.textContent='Создать аккаунт';return;}
+  btn.textContent='Сохраняю профиль...';
+  const{error:pe}=await createUserProfile(data.user.id,name,currentRole);
+  if(pe){
+    showAuthError('Профиль не сохранился. Попробуй войти с этим же email и паролем через пару секунд, либо обратись к администратору. Код ошибки: '+pe.message);
+    btn.disabled=false;btn.textContent='Создать аккаунт';
+    return;
+  }
   await loadProfileAndEnter(data.user);
 }
 
@@ -2252,6 +2275,7 @@ async function doLogin(){
   const pass=document.getElementById('loginPassword').value;
   if(!email||!pass){showAuthError('Введи email и пароль');return;}
   const btn=document.getElementById('btnLogin');
+  if(btn.disabled)return; // защита от двойного клика
   btn.disabled=true;btn.textContent='Вхожу...';
   if(currentRole==='admin'&&email===ADMIN_EMAIL&&pass===ADMIN_PASS){
     currentProfile={id:'admin',name:'Администратор',role:'admin'};
@@ -2265,9 +2289,21 @@ async function doLogin(){
 
 async function loadProfileAndEnter(user){
   currentUser=user;
-  const{data}=await db.from('users').select('*').eq('id',user.id).single();
-  if(!data){showAuthError('Профиль не найден');return;}
-  currentProfile=data;enterApp();
+  const{data}=await db.from('users').select('*').eq('id',user.id).maybeSingle();
+  if(data){currentProfile=data;enterApp();return;}
+  // профиль не найден — пробуем восстановить его на лету
+  // используем имя из email как fallback, роль — currentRole (выбранную на экране входа)
+  const fallbackName=user.email?user.email.split('@')[0]:'Пользователь';
+  const{error:pe}=await createUserProfile(user.id,fallbackName,currentRole||'trainee');
+  if(pe){
+    showAuthError('Профиль не найден и не удалось его восстановить. Обратись к администратору. Код: '+pe.message);
+    const btn=document.getElementById('btnLogin');
+    if(btn){btn.disabled=false;btn.textContent='Войти';}
+    return;
+  }
+  const{data:retryData}=await db.from('users').select('*').eq('id',user.id).maybeSingle();
+  if(retryData){currentProfile=retryData;enterApp();}
+  else{showAuthError('Не удалось загрузить профиль. Попробуй ещё раз.');}
 }
 
 async function doLogout(){
