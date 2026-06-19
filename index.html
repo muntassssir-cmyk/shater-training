@@ -5985,6 +5985,45 @@ const MATERIAL_STAZHER = `
 
 <div class="content">
 
+  <!-- SECTION: УРОВНИ И ПЕРЕДАЧА НАСТАВНИКА -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">★</div>
+      <h2>Как устроена твоя стажировка: уровни и наставники</h2>
+    </div>
+    <p class="prose">Прежде чем начать изучение блоков, важно понимать общую картину: как устроена система уровней, что от тебя требуется на каждом этапе и почему наставник может меняться.</p>
+
+    <p class="prose" style="margin-top:16px;"><strong style="color:var(--text);">Система уровней</strong></p>
+    <table class="sit-table">
+      <thead>
+        <tr><th>Уровень</th><th>Когда присваивается</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Стажёр</td><td>Первая неделя — изучение основ под наблюдением наставника</td></tr>
+        <tr><td>Новичок</td><td>Сдан и подтверждён минимум 1 блок</td></tr>
+        <tr><td>Профи</td><td>Сданы и подтверждены все 5 учебных блоков + итоговая аттестация (Блок 6)</td></tr>
+        <tr><td>Легенда</td><td>Не присваивается за тесты — решение руководства по итогам долгой стабильной работы</td></tr>
+      </tbody>
+    </table>
+
+    <p class="prose" style="margin-top:20px;"><strong style="color:var(--text);">Как проходит обучение</strong></p>
+    <p class="prose">Ты проходишь блоки по порядку (1 → 2 → 3 → 4 → 5). После каждого блока — тест на платформе: 5 вопросов из 20, проходной балл 4 из 5 (80%). Если не набрал — материал перечитывается, тест пересдаётся с новой выборкой вопросов.</p>
+    <p class="prose">Финальный Блок 6 («Аттестация») открывается после прохождения блоков 1–5. Это не новый материал с нуля — это закрепление и итоговая проверка всего, что ты прошёл. Формат сдачи, путь к статусу «Легенда» и решение администратора по итогу — там же.</p>
+
+    <div class="callout">
+      Можешь выбрать режим прохождения блока: <strong>«С наставником»</strong> — твой результат подтверждает наставник, или <strong>«Самостоятельно»</strong> — при проходном балле следующий блок открывается автоматически.
+    </div>
+
+    <p class="prose" style="margin-top:20px;"><strong style="color:var(--text);">Передача между наставниками</strong></p>
+    <p class="prose">Твоя стажировка может проходить с двумя разными наставниками. Это нормальная часть процесса, а не признак проблемы:</p>
+    <ul style="margin:12px 0 12px 20px;padding:0;color:var(--text-dim);font-size:15px;line-height:1.7;">
+      <li style="margin-bottom:8px;">После того как ты сдашь и подтвердишь <strong style="color:var(--text);">Блок 2</strong>, твой текущий наставник (Наставник 1) заполняет лист передачи с заметками о твоих сильных сторонах и зонах роста.</li>
+      <li style="margin-bottom:8px;">Администратор рассматривает лист передачи и назначает тебе <strong style="color:var(--text);">Наставника 2</strong> — он ведёт тебя через оставшиеся блоки (3–6).</li>
+      <li style="margin-bottom:8px;">Ты не теряешь прогресс при передаче — все сданные и подтверждённые блоки сохраняются.</li>
+      <li style="margin-bottom:8px;">Если у тебя возникли вопросы о том, кто твой текущий наставник — посмотри в разделе «Главная», там всегда указан актуальный наставник.</li>
+    </ul>
+  </div>
+
   <!-- SECTION 1 -->
   <div class="section">
     <div class="section-header">
@@ -6479,19 +6518,6 @@ const MATERIAL_STAZHER = `
   </div>
 
 </div>
-
-
-  function toggleDay(header) {
-    const body = header.nextElementSibling;
-    const chevron = header.querySelector('.day-chevron');
-    const isOpen = body.classList.contains('open');
-    body.classList.toggle('open', !isOpen);
-    chevron.style.transform = isOpen ? '' : 'rotate(90deg)';
-  }
-
-
-</body>
-</html>
 `;
 
 function renderMaterial(id){
