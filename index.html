@@ -734,7 +734,7 @@ const QUIZ_BANK={
   },
 
   {
-    question: "Официант Магомед пришёл на смену с едва уловимым запахом одеколона. Администратор сделал замечание. Что не так?",
+    question: "Официант Артём пришёл на смену с едва уловимым запахом одеколона. Администратор сделал замечание. Что не так?",
     options: [
       "Ничего — лёгкий парфюм допустим",
       "Парфюм должен быть полностью исключён на смене",
@@ -773,7 +773,7 @@ const QUIZ_BANK={
   },
 
   {
-    question: "Официантка Абдуллаев вышел в форме на улицу во время перерыва покурить у входа. Это нарушение?",
+    question: "Официантка Диана вышла в форме на улицу во время перерыва покурить у входа. Это нарушение?",
     options: [
       "Нет, перерыв — личное время",
       "Только если её видели гости",
@@ -902,7 +902,7 @@ const QUIZ_BANK={
       "Устное предупреждение без штрафа"
     ],
     correct: 1,
-    explain: "Опоздание без предупреждения более 5 минут — категория А, штраф 300 ₽. Может быть аннулирован администратором при хорошей работе в смену.",
+    explain: "Опоздание без предупреждения более 15 минут — категория А, штраф 300 ₽. Может быть аннулирован администратором при хорошей работе в смену.",
     type: "single"
   },
 
@@ -1088,7 +1088,7 @@ const QUIZ_BANK={
       "До закрытия ресторана"
     ],
     correct: [1],
-    explanation: "Мангал принимают последний заказ до 22:00. Бар стейк зона и основная кухня работают до 22:30."
+    explanation: "Мангал и зона стейков принимают последний заказ до 22:00. Бар и основная кухня работают до 22:30."
   },
 
   // 6
@@ -2410,9 +2410,16 @@ async function renderBlocksList(){
   renderBlocksGrid(bpData||[],isMentor,selfStudy);
 }
 
-function renderBlocksGrid(bpData,allUnlocked=false,selfStudy=false){
+function renderBlocksGrid(bpDataRaw,allUnlocked=false,selfStudy=false){
   const grid=document.getElementById('blocksGrid');if(!grid)return;
   const isMentorOrAdmin=currentProfile&&(currentProfile.role==='mentor'||currentProfile.role==='admin');
+  // на случай дублей по block_id — оставляем по одной записи на блок (приоритет подтверждённым)
+  const byBlock={};
+  (bpDataRaw||[]).forEach(x=>{
+    const ex=byBlock[x.block_id];
+    if(!ex||(x.confirmed_by&&!ex.confirmed_by))byBlock[x.block_id]=x;
+  });
+  const bpData=Object.values(byBlock);
   grid.innerHTML=BLOCKS.filter(b=>!b.mentorOnly||isMentorOrAdmin).map(b=>{
     if(b.mentorOnly){
       return '<div class="block-card unlocked" onclick="openBlock(\''+b.id+'\')">'+
@@ -2630,7 +2637,7 @@ const MATERIAL={
       </thead>
       <tbody>
         <tr><td>Внешний вид не соответствует стандарту или нет инвентаря</td><td>300 ₽</td></tr>
-        <tr><td>Опоздание без предупреждения (более 5 минут)</td><td>300 ₽</td></tr>
+        <tr><td>Опоздание без предупреждения (более 15 минут)</td><td>300 ₽</td></tr>
         <tr><td>Использование телефона в зале</td><td>300 ₽</td></tr>
         <tr><td>Нарушение субординации с коллегами</td><td>500 ₽</td></tr>
         <tr><td>Стоять спиной к гостям</td><td>200 ₽</td></tr>
@@ -2875,10 +2882,10 @@ const MATERIAL={
             <td class="time-badge time-badge--close">22:00</td>
           </tr>
           <tr>
-            <td class="time-badge">10:00</td>
+            <td class="time-badge">11:00</td>
             <td><strong>Зона стейков</strong></td>
-            <td>Стейки и мясные блюда на гриле — последний заказ до 22:30</td>
-            <td class="time-badge time-badge--close">22:30</td>
+            <td>Стейки и мясные блюда на гриле — последний заказ до 22:00</td>
+            <td class="time-badge time-badge--close">22:00</td>
           </tr>
         </tbody>
       </table>
@@ -6644,9 +6651,13 @@ function renderChecklist(blockId){
 // ── TRAINEE PROGRESS ──
 async function renderTraineeProgress(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
-  const{data:bpData}=await db.from('block_progress').select('*').eq('user_id',currentProfile.id);
-  const passed=(bpData||[]).filter(b=>b.passed&&b.confirmed_by).length,pct=Math.round((passed/5)*100);
-  setMainHTML(`<div class="page-title">📊 Мой прогресс</div><div class="card"><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passed} из 5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div></div><table class="content-table" style="margin-top:16px"><tr><th>Блок</th><th>Результат</th><th>Попыток</th><th>Подтверждение</th></tr>${BLOCKS.slice(0,5).map(b=>{const bp=(bpData||[]).find(x=>x.block_id===b.id);return`<tr><td>${b.icon} ${b.title}</td><td>${bp?.passed?`✓ ${bp.score}%`:'—'}</td><td>${bp?.attempts||0}</td><td>${bp?.confirmed_by?'✓ Подтверждён':bp?.passed?'⏳ Ожидает':'—'}</td></tr>`;}).join('')}</table>`);
+  const{data:bpDataRaw}=await db.from('block_progress').select('*').eq('user_id',currentProfile.id).order('created_at',{ascending:true});
+  // на случай дублей по block_id — берём самую свежую запись по каждому блоку
+  const bpByBlock={};
+  (bpDataRaw||[]).forEach(b=>{bpByBlock[b.block_id]=b;});
+  const bpData=Object.values(bpByBlock);
+  const passed=bpData.filter(b=>b.passed&&b.confirmed_by).length,pct=Math.round((passed/5)*100);
+  setMainHTML(`<div class="page-title">📊 Мой прогресс</div><div class="card"><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passed} из 5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div></div><table class="content-table" style="margin-top:16px"><tr><th>Блок</th><th>Результат</th><th>Попыток</th><th>Подтверждение</th></tr>${BLOCKS.slice(0,5).map(b=>{const bp=bpByBlock[b.id];return`<tr><td>${b.icon} ${b.title}</td><td>${bp?.passed?`✓ ${bp.score}%`:'—'}</td><td>${bp?.attempts||0}</td><td>${bp?.confirmed_by?'✓ Подтверждён':bp?.passed?'⏳ Ожидает':'—'}</td></tr>`;}).join('')}</table>`);
 }
 
 // ── MENTOR ──
@@ -6757,9 +6768,31 @@ async function assignMentor(tid){
 async function renderAdminTrainees(){
   setMainHTML('<div class="loading"><div class="spinner"></div>Загрузка...</div>');
   const{data:trainees}=await db.from('users').select('*').eq('role','trainee');
-  const{data:bpAll}=await db.from('block_progress').select('*');
+  const{data:bpAll}=await db.from('block_progress').select('*').order('created_at',{ascending:true});
   const{data:mentors}=await db.from('users').select('*').eq('role','mentor');
-  setMainHTML(`<div class="page-title">👥 Все стажёры</div><div class="page-sub">${trainees?.length||0} человек</div>${(trainees||[]).map(t=>{const mentor=(mentors||[]).find(m=>m.id===t.mentor_id),tBP=(bpAll||[]).filter(b=>b.user_id===t.id),passedCount=tBP.filter(b=>b.passed&&b.confirmed_by).length,pct=Math.round((passedCount/5)*100);return`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(t.name||'?')[0].toUpperCase()}</div><div style="flex:1"><div class="tc-name">${t.name}</div><div class="tc-meta">${mentor?`Наставник: ${mentor.name}`:'Без наставника'}</div></div><span class="badge ${passedCount>=5?'badge-green':passedCount>0?'badge-gold':'badge-gray'}">${passedCount>=5?'Профи':passedCount>0?'Новичок':'Стажёр'}</span></div><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passedCount}/5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div><div class="blocks-mini">${BLOCKS.slice(0,5).map(b=>{const bp=tBP.find(x=>x.block_id===b.id);let cls='bm-locked',txt='Б'+b.id;if(bp?.passed&&bp?.confirmed_by){cls='bm-done';txt='Б'+b.id+' ✓';}else if(bp?.passed&&!bp?.confirmed_by){cls='bm-needs-confirm';txt='Б'+b.id+' ⏳';}return'<span class="bm '+cls+'">'+txt+'</span>';}).join('')}</div><div class="flex-row mt8"><button class="btn-small-ghost" onclick="editUserName('${t.id}','${t.name}')">✏️ Имя</button>${t.mentor_id?`<button class="btn-small-ghost" onclick="removeMentor('${t.id}')">👤 Убрать наставника</button>`:''}<button class="btn-danger" onclick="deleteUser('${t.id}','${t.name}')">🗑 Удалить</button></div></div>`;}).join('')||'<div class="callout">Стажёров пока нет.</div>'}`);
+  setMainHTML(`<div class="page-title">👥 Все стажёры</div><div class="page-sub">${trainees?.length||0} человек</div>${(trainees||[]).map(t=>{
+    const mentor=(mentors||[]).find(m=>m.id===t.mentor_id);
+    const tBPraw=(bpAll||[]).filter(b=>b.user_id===t.id);
+    // на случай дублей по block_id — берём самую свежую запись по каждому блоку
+    const tBPByBlock={};
+    tBPraw.forEach(b=>{tBPByBlock[b.block_id]=b;});
+    const tBP=Object.values(tBPByBlock);
+    const passedCount=tBP.filter(b=>b.passed&&b.confirmed_by).length;
+    const pct=Math.round((passedCount/5)*100);
+    return`<div class="trainee-card"><div class="tc-header"><div class="tc-avatar">${(t.name||'?')[0].toUpperCase()}</div><div style="flex:1"><div class="tc-name">${t.name}</div><div class="tc-meta">${mentor?`Наставник: ${mentor.name}`:'Без наставника'}</div></div><span class="badge ${passedCount>=5?'badge-green':passedCount>0?'badge-gold':'badge-gray'}">${passedCount>=5?'Профи':passedCount>0?'Новичок':'Стажёр'}</span></div><div class="prog-wrap"><div class="prog-label"><span>Блоков: ${passedCount}/5</span><span>${pct}%</span></div><div class="prog-bg"><div class="prog-fill" style="width:${pct}%"></div></div></div><div class="blocks-mini">${BLOCKS.slice(0,5).map(b=>{const bp=tBPByBlock[b.id];let cls='bm-locked',txt='Б'+b.id;if(bp?.passed&&bp?.confirmed_by){cls='bm-done';txt='Б'+b.id+' ✓';}else if(bp?.passed&&!bp?.confirmed_by){cls='bm-needs-confirm';txt='Б'+b.id+' ⏳';}const clickable=bp?` style="cursor:pointer" onclick="adminResetBlock('${t.id}','${t.name}',${b.id})" title="Нажми, чтобы сбросить блок ${b.id}"`:'';return'<span class="bm '+cls+'"'+clickable+'>'+txt+'</span>';}).join('')}</div><div class="flex-row mt8"><button class="btn-small-ghost" onclick="editUserName('${t.id}','${t.name}')">✏️ Имя</button>${t.mentor_id?`<button class="btn-small-ghost" onclick="removeMentor('${t.id}')">👤 Убрать наставника</button>`:''}${passedCount>0?`<button class="btn-small-ghost" onclick="adminResetAllProgress('${t.id}','${t.name}')" style="color:#e0a030">↺ Сбросить весь прогресс</button>`:''}<button class="btn-danger" onclick="deleteUser('${t.id}','${t.name}')">🗑 Удалить</button></div></div>`;}).join('')||'<div class="callout">Стажёров пока нет.</div>'}`);
+}
+async function adminResetBlock(traineeId,traineeName,blockId){
+  if(!confirm(`Сбросить блок ${blockId} для ${traineeName}? Стажёр сможет пройти его заново с нуля.`))return;
+  await db.from('block_progress').delete().eq('user_id',traineeId).eq('block_id',blockId);
+  alert(`✓ Блок ${blockId} сброшен для ${traineeName}.`);
+  renderAdminTrainees();
+}
+async function adminResetAllProgress(traineeId,traineeName){
+  if(!confirm(`Полностью сбросить весь прогресс для ${traineeName}? Будут удалены ВСЕ сданные блоки. Это нельзя отменить.`))return;
+  if(!confirm(`Точно сбросить ВСЁ для ${traineeName}? Подтверди ещё раз.`))return;
+  await db.from('block_progress').delete().eq('user_id',traineeId);
+  alert(`✓ Весь прогресс сброшен для ${traineeName}. Стажёр начнёт обучение с начала.`);
+  renderAdminTrainees();
 }
 
 async function renderAdminMentors(){
