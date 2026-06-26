@@ -6583,14 +6583,32 @@ function goBack(){
   if(currentProfile.role==='mentor')renderBlocksList();
   else renderTraineeDashboard();
 }
+function goToNextBlock(nextId){
+  quizState=null; // сбрасываем — иначе блокировка таба "Материал" сработает на новом блоке
+  openBlock(nextId);
+}
 function renderQuizQ(){
   const qs=quizState,q=QUIZZES[qs.id]?.[qs.current],total=QUIZZES[qs.id]?.length||0,body=document.getElementById('blockBody');
   if(qs.done){
     const correct=qs.answers.filter(a=>a).length,pct=Math.round((correct/total)*100),pass=correct>=4;
     const isSelf=currentTraineeMode==='self';
+    const nextBlockId=qs.id+1;
+    const hasNextBlock=pass&&isSelf&&currentProfile.role==='trainee'&&nextBlockId<=5;
     const passNote=pass&&currentProfile.role==='trainee'?(isSelf?'<div class="res-note">✅ Следующий блок разблокирован автоматически.</div>':'<div class="res-note">⏳ Ожидай подтверждения наставника.</div>'):'';
-    body.innerHTML=`<div class="quiz-wrap fade-in"><div class="quiz-result"><div class="res-score">${correct}/5</div><div class="res-label">${correct} из ${total} правильных</div><div class="res-verdict ${pass?'pass':'fail'}">${pass?'✓ Зачёт':'✗ Не зачёт'}</div><div class="res-hint">${pass?'Отлично! Результат сохранён.':'Изучи материал и попробуй снова. Нужно минимум 4 из 5.'}</div>${passNote}<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn-quiz" onclick="startQuiz(${qs.id})">Пройти снова</button>${pass?'<button class="btn-ghost" onclick="goBack()">Назад</button>':''}</div></div></div>`;
-    if(pass&&currentProfile.role==='trainee')saveBlockResult(qs.id,pct);return;
+    const nextBtnHTML=hasNextBlock?`<button class="btn-quiz" id="nextBlockBtn" onclick="goToNextBlock(${nextBlockId})" style="background:var(--gold)">Перейти к блоку ${nextBlockId} →</button>`:'';
+    body.innerHTML=`<div class="quiz-wrap fade-in"><div class="quiz-result"><div class="res-score">${correct}/5</div><div class="res-label">${correct} из ${total} правильных</div><div class="res-verdict ${pass?'pass':'fail'}">${pass?'✓ Зачёт':'✗ Не зачёт'}</div><div class="res-hint">${pass?'Отлично! Результат сохранён.':'Изучи материал и попробуй снова. Нужно минимум 4 из 5.'}</div>${passNote}${hasNextBlock?'<div class="res-hint" id="autoAdvanceNote" style="margin-top:8px">Переход через <span id="autoAdvanceSec">4</span>с...</div>':''}<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">${nextBtnHTML}<button class="btn-ghost" onclick="startQuiz(${qs.id})">Пройти снова</button>${pass&&!hasNextBlock?'<button class="btn-ghost" onclick="goBack()">Назад</button>':''}</div></div></div>`;
+    if(pass&&currentProfile.role==='trainee')saveBlockResult(qs.id,pct);
+    if(hasNextBlock){
+      let sec=4;
+      const timer=setInterval(()=>{
+        sec--;
+        const secEl=document.getElementById('autoAdvanceSec');
+        if(!secEl){clearInterval(timer);return;}
+        secEl.textContent=sec;
+        if(sec<=0){clearInterval(timer);goToNextBlock(nextBlockId);}
+      },1000);
+    }
+    return;
   }
   if(!q)return;
   const letters=['А','Б','В','Г'];
