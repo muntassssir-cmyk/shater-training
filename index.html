@@ -662,8 +662,29 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min
         <button type="button" onclick="togglePass('loginPassword',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-faint);font-size:13px">👁</button>
       </div></div>
       <button class="btn-primary" onclick="doLogin()" id="btnLogin">Войти</button>
+      <div class="auth-toggle" style="margin-top:8px"><span onclick="showForgotPassword()">Забыл пароль?</span></div>
       <div class="auth-toggle" id="loginToggle">Нет аккаунта? <span onclick="toggleAuthMode()">Регистрация</span></div>
     </div>
+    <div id="authFormForgot" class="hidden">
+      <div class="auth-info" style="display:block">Введи email — пришлём ссылку для смены пароля.</div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="forgotEmail" type="email" placeholder="your@email.com"></div>
+      <button class="btn-primary" onclick="doForgotPassword()" id="btnForgot">Отправить ссылку</button>
+      <div class="auth-toggle"><span onclick="hideForgotPassword()">← Назад ко входу</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="screenResetPassword" class="screen">
+  <div class="auth-box">
+    <div class="auth-title">Новый пароль</div>
+    <div class="auth-sub">Придумай новый пароль для входа</div>
+    <div class="auth-error" id="resetError"></div>
+    <div class="form-group"><label class="form-label">Новый пароль</label>
+    <div style="position:relative">
+      <input class="form-input" id="newPassword" type="password" placeholder="Минимум 6 символов" style="padding-right:44px">
+      <button type="button" onclick="togglePass('newPassword',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-faint);font-size:13px">👁</button>
+    </div></div>
+    <button class="btn-primary" onclick="doSetNewPassword()" id="btnSetNewPassword">Сохранить пароль</button>
   </div>
 </div>
 
@@ -2208,10 +2229,24 @@ function goToLanding(){showScreen('screenLanding');}
 function goToAuth(role){currentRole=role;authMode='register';updateAuthUI();showScreen('screenAuth');}
 function toggleAuthMode(){authMode=authMode==='register'?'login':'register';updateAuthUI();}
 
+function showForgotPassword(){
+  document.getElementById('authFormLogin').classList.add('hidden');
+  document.getElementById('authFormRegister').classList.add('hidden');
+  document.getElementById('authFormForgot').classList.remove('hidden');
+  document.getElementById('authTitle').textContent='Восстановление пароля';
+  document.getElementById('authSub').textContent='Сброс пароля';
+  document.getElementById('authError').classList.remove('show');
+}
+function hideForgotPassword(){
+  document.getElementById('authFormForgot').classList.add('hidden');
+  updateAuthUI();
+}
+
 function updateAuthUI(){
   const badges={trainee:'🔰 Стажёр',mentor:'👨‍🏫 Наставник',admin:'👑 Администратор'};
   document.getElementById('authRoleBadge').textContent=badges[currentRole];
   document.getElementById('authTitle').textContent=authMode==='register'?'Регистрация':'Вход';
+  document.getElementById('authFormForgot').classList.add('hidden');
   const info=document.getElementById('authInfoBox');
   if(currentRole==='trainee'&&authMode==='register'){info.textContent='После регистрации можешь сразу начать обучение или дождаться наставника.';info.style.display='block';}
   else if(currentRole==='mentor'&&authMode==='register'){info.textContent='Наставник может вести до 2 стажёров одновременно.';info.style.display='block';}
@@ -2304,6 +2339,44 @@ async function loadProfileAndEnter(user){
   const{data:retryData}=await db.from('users').select('*').eq('id',user.id).maybeSingle();
   if(retryData){currentProfile=retryData;enterApp();}
   else{showAuthError('Не удалось загрузить профиль. Попробуй ещё раз.');}
+}
+
+async function doForgotPassword(){
+  const email=document.getElementById('forgotEmail').value.trim();
+  const errEl=document.getElementById('authError');
+  if(!email){showAuthError('Введи email');return;}
+  const btn=document.getElementById('btnForgot');
+  if(btn.disabled)return;
+  btn.disabled=true;btn.textContent='Отправляю...';
+  const{error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.href.split('#')[0]});
+  btn.disabled=false;btn.textContent='Отправить ссылку';
+  if(error){showAuthError('Не удалось отправить письмо: '+error.message);return;}
+  errEl.classList.remove('show');
+  alert('Если такой email зарегистрирован, письмо со ссылкой для сброса пароля отправлено. Проверь папку "Спам", если не видно во входящих.');
+  hideForgotPassword();
+}
+
+async function doSetNewPassword(){
+  const pass=document.getElementById('newPassword').value;
+  if(!pass||pass.length<6){
+    const el=document.getElementById('resetError');
+    el.textContent='Пароль минимум 6 символов';el.classList.add('show');
+    return;
+  }
+  const btn=document.getElementById('btnSetNewPassword');
+  if(btn.disabled)return;
+  btn.disabled=true;btn.textContent='Сохраняю...';
+  const{error}=await db.auth.updateUser({password:pass});
+  if(error){
+    const el=document.getElementById('resetError');
+    el.textContent='Не получилось сохранить: '+error.message;el.classList.add('show');
+    btn.disabled=false;btn.textContent='Сохранить пароль';
+    return;
+  }
+  alert('Пароль обновлён. Теперь можно войти с новым паролем.');
+  const{data:{session}}=await db.auth.getSession();
+  if(session?.user){await loadProfileAndEnter(session.user);}
+  else{goToLanding();}
 }
 
 async function doLogout(){
@@ -6955,11 +7028,19 @@ document.getElementById('sidebarOverlay').onclick=closeMobileSidebar;
     document.body.innerHTML='<div style="background:#0E0D0B;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif"><div style="background:#1E1B16;border:1px solid #C9A84C;border-radius:16px;padding:40px;max-width:480px;text-align:center"><div style="font-size:40px;margin-bottom:16px">⚠️</div><div style="color:#C9A84C;font-size:24px;margin-bottom:12px">Нужен веб-сервер</div><div style="color:#A09070;font-size:13px;line-height:1.8;margin-bottom:20px">Файл открыт напрямую (file://). Приложение работает только через HTTP.</div><div style="background:#252118;border-radius:8px;padding:16px;font-size:13px;color:#A09070;text-align:left"><div style="color:#C9A84C;margin-bottom:10px">Открой по ссылке:</div><div>https://muntassssir-cmyk.github.io/shater-training</div></div></div></div>';
     return;
   }
+  const isRecoveryLink=window.location.hash.includes('type=recovery');
+  db.auth.onAuthStateChange((event,session)=>{
+    if(event==='PASSWORD_RECOVERY'){
+      showScreen('screenResetPassword');
+    }
+  });
+  if(isRecoveryLink){
+    showScreen('screenResetPassword');
+    return;
+  }
   const{data:{session}}=await db.auth.getSession();
   if(session?.user){
-    currentUser=session.user;
-    const{data}=await db.from('users').select('*').eq('id',session.user.id).single();
-    if(data){currentProfile=data;enterApp();}
+    await loadProfileAndEnter(session.user);
   }
 })();
 
